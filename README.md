@@ -58,33 +58,33 @@ This project focuses on **accessibility, robustness, and real-world deployabilit
 
 ```mermaid
 flowchart TD
-  A[App Launch] --> B[SwiftUI App Entry\n(NavMRTApp.swift)]
-  B --> C[Start/Goal Selection UI\nSelect startId + goalId]
-  C --> D[NavigatorView(startId, goalId)]
+  A[App Launch] --> B[SwiftUI App Entry\nNavMRTApp.swift]
+  B --> C[Start and Goal Selection UI\nSelect startId and goalId]
+  C --> D[NavigatorView]
 
-  D --> E[Load Static Data\nDataStore.shared\ngraph / fingerprints / beacons / places]
-  D --> F[Route Planning\nGraphRouter.shortestPath()]
+  D --> E[Load Static Data\nDataStore.shared\ngraph fingerprints beacons places]
+  D --> F[Route Planning\nGraphRouter shortestPath]
 
   D --> G{Beacon Source}
-  G -->|Mock| H[MockBeaconManager\nTimer generates BeaconReading[]]
-  G -->|Real| I[BeaconManager (CoreLocation)\nstartRangingBeacons()]
+  G -->|Mock| H[MockBeaconManager\nTimer generates BeaconReading]
+  G -->|Real| I[BeaconManager CoreLocation\nstartRangingBeacons]
 
-  H --> J[onReceive latest readings]
+  H --> J[Receive Beacon Readings]
   I --> J
 
-  J --> K[RSSI Smoothing\nRSSIEMA.update()]
-  K --> L[Localization\nKNNPositioner.estimate()\n(x,y,floor)]
-  L --> M[Navigation State Machine\nNavigatorView]
+  J --> K[RSSI Smoothing\nRSSIEMA update]
+  K --> L[Localization\nKNNPositioner estimate\nx y floor]
+  L --> M[Navigation State Machine]
 
   M --> N[Floor Transition Handling\nexpectedFloor gating]
-  M --> O[Off-route Detection\ndistance-to-segment + reroute]
-  M --> P[Arrival + Turn Instructions\nangle geometry + segment advance]
+  M --> O[Off route Detection\ndistance to segment and reroute]
+  M --> P[Arrival and Turn Instructions\nangle geometry and segment advance]
 
   N --> Q[Outputs]
   O --> Q
   P --> Q
 
-  Q --> R[UI Text\ninstructionText + VoiceOver focus]
-  Q --> S[Speech + Haptics\nSpeech.say() + Haptics]
+  Q --> R[UI Text\ninstructionText and VoiceOver]
+  Q --> S[Speech and Haptics\nSpeech say and Haptics]
 
 ```
