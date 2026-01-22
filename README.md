@@ -56,3 +56,32 @@ This project focuses on **accessibility, robustness, and real-world deployabilit
 - User studies & on-site MRT deployment
 - Energy optimization & signal stabilization
 
+flowchart TD
+  A[App Launch] --> B[SwiftUI App Entry<br/>(NavMRTApp.swift)]
+  B --> C[Start/Goal Selection UI<br/>(Select startId + goalId)]
+  C --> D[NavigatorView(startId, goalId)]
+
+  D --> E[Load Static Data<br/>DataStore.shared<br/>graph / fingerprints / beacons / places]
+  D --> F[Route Planning<br/>GraphRouter.shortestPath()]
+
+  D --> G{Beacon Source}
+  G -->|Mock| H[MockBeaconManager<br/>Timer generates BeaconReading[]]
+  G -->|Real| I[BeaconManager (CoreLocation)<br/>startRangingBeacons()]
+
+  H --> J[onReceive(latest readings)]
+  I --> J
+
+  J --> K[RSSI Smoothing<br/>RSSIEMA.update()]
+  K --> L[Localization<br/>KNNPositioner.estimate()<br/>(x,y,floor)]
+  L --> M[Navigation State Machine<br/>(NavigatorView)]
+
+  M --> N[Floor Transition Handling<br/>expectedFloor gating]
+  M --> O[Off-route Detection<br/>distance-to-segment + reroute]
+  M --> P[Arrival + Turn Instructions<br/>angle geometry + segment advance]
+
+  N --> Q[Outputs]
+  O --> Q
+  P --> Q
+
+  Q --> R[UI Text<br/>instructionText + VoiceOver focus]
+  Q --> S[Speech + Haptics<br/>Speech.say() + Haptics.*]
