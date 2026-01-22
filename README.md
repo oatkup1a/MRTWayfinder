@@ -58,32 +58,33 @@ This project focuses on **accessibility, robustness, and real-world deployabilit
 
 ```mermaid
 flowchart TD
-  A[App Launch] --> B[SwiftUI App Entry<br/>(NavMRTApp.swift)]
-  B --> C[Start/Goal Selection UI<br/>(Select startId + goalId)]
+  A[App Launch] --> B[SwiftUI App Entry\n(NavMRTApp.swift)]
+  B --> C[Start/Goal Selection UI\nSelect startId + goalId]
   C --> D[NavigatorView(startId, goalId)]
 
-  D --> E[Load Static Data<br/>DataStore.shared<br/>graph / fingerprints / beacons / places]
-  D --> F[Route Planning<br/>GraphRouter.shortestPath()]
+  D --> E[Load Static Data\nDataStore.shared\ngraph / fingerprints / beacons / places]
+  D --> F[Route Planning\nGraphRouter.shortestPath()]
 
   D --> G{Beacon Source}
-  G -->|Mock| H[MockBeaconManager<br/>Timer generates BeaconReading[]]
-  G -->|Real| I[BeaconManager (CoreLocation)<br/>startRangingBeacons()]
+  G -->|Mock| H[MockBeaconManager\nTimer generates BeaconReading[]]
+  G -->|Real| I[BeaconManager (CoreLocation)\nstartRangingBeacons()]
 
-  H --> J[onReceive(latest readings)]
+  H --> J[onReceive latest readings]
   I --> J
 
-  J --> K[RSSI Smoothing<br/>RSSIEMA.update()]
-  K --> L[Localization<br/>KNNPositioner.estimate()<br/>(x,y,floor)]
-  L --> M[Navigation State Machine<br/>(NavigatorView)]
+  J --> K[RSSI Smoothing\nRSSIEMA.update()]
+  K --> L[Localization\nKNNPositioner.estimate()\n(x,y,floor)]
+  L --> M[Navigation State Machine\nNavigatorView]
 
-  M --> N[Floor Transition Handling<br/>expectedFloor gating]
-  M --> O[Off-route Detection<br/>distance-to-segment + reroute]
-  M --> P[Arrival + Turn Instructions<br/>angle geometry + segment advance]
+  M --> N[Floor Transition Handling\nexpectedFloor gating]
+  M --> O[Off-route Detection\ndistance-to-segment + reroute]
+  M --> P[Arrival + Turn Instructions\nangle geometry + segment advance]
 
   N --> Q[Outputs]
   O --> Q
   P --> Q
 
-  Q --> R[UI Text<br/>instructionText + VoiceOver focus]
-  Q --> S[Speech + Haptics<br/>Speech.say() + Haptics.*]
+  Q --> R[UI Text\ninstructionText + VoiceOver focus]
+  Q --> S[Speech + Haptics\nSpeech.say() + Haptics]
+
 ```
