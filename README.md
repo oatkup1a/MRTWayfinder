@@ -56,6 +56,7 @@ This project focuses on **accessibility, robustness, and real-world deployabilit
 - User studies & on-site MRT deployment
 - Energy optimization & signal stabilization
 
+```mermaid
 flowchart TD
   A[App Launch] --> B[SwiftUI App Entry<br/>(NavMRTApp.swift)]
   B --> C[Start/Goal Selection UI<br/>(Select startId + goalId)]
@@ -85,3 +86,4 @@ flowchart TD
 
   Q --> R[UI Text<br/>instructionText + VoiceOver focus]
   Q --> S[Speech + Haptics<br/>Speech.say() + Haptics.*]
+```
