@@ -58,33 +58,33 @@ This project focuses on **accessibility, robustness, and real-world deployabilit
 
 ```mermaid
 flowchart TD
-  A[App Launch] --> B[SwiftUI App Entry\nNavMRTApp.swift]
-  B --> C[Start and Goal Selection UI\nSelect startId and goalId]
-  C --> D[NavigatorView]
+  A["App Launch"] --> B["SwiftUI App Entry<br/>NavMRTApp.swift"]
+  B --> C["Start and Goal Selection UI<br/>Select startId and goalId"]
+  C --> D["NavigatorView"]
 
-  D --> E[Load Static Data\nDataStore.shared\ngraph fingerprints beacons places]
-  D --> F[Route Planning\nGraphRouter shortestPath]
+  D --> E["Load Static Data<br/>DataStore.shared<br/>graph / fingerprints / beacons / places"]
+  D --> F["Route Planning<br/>GraphRouter.shortestPath"]
 
   D --> G{Beacon Source}
-  G -->|Mock| H[MockBeaconManager\nTimer generates BeaconReading]
-  G -->|Real| I[BeaconManager CoreLocation\nstartRangingBeacons]
+  G -->|Mock| H["MockBeaconManager<br/>Timer generates BeaconReading"]
+  G -->|Real| I["BeaconManager CoreLocation<br/>startRangingBeacons"]
 
-  H --> J[Receive Beacon Readings]
+  H --> J["Receive Beacon Readings"]
   I --> J
 
-  J --> K[RSSI Smoothing\nRSSIEMA update]
-  K --> L[Localization\nKNNPositioner estimate\nx y floor]
-  L --> M[Navigation State Machine]
+  J --> K["RSSI Smoothing<br/>RSSIEMA.update"]
+  K --> L["Localization<br/>KNNPositioner.estimate<br/>x y floor"]
+  L --> M["Navigation State Machine"]
 
-  M --> N[Floor Transition Handling\nexpectedFloor gating]
-  M --> O[Off route Detection\ndistance to segment and reroute]
-  M --> P[Arrival and Turn Instructions\nangle geometry and segment advance]
+  M --> N["Floor Transition Handling<br/>expectedFloor gating"]
+  M --> O["Off-route Detection<br/>distance to segment + reroute"]
+  M --> P["Arrival and Turn Instructions<br/>angle geometry + segment advance"]
 
-  N --> Q[Outputs]
+  N --> Q["Outputs"]
   O --> Q
   P --> Q
 
-  Q --> R[UI Text\ninstructionText and VoiceOver]
-  Q --> S[Speech and Haptics\nSpeech say and Haptics]
+  Q --> R["UI Text<br/>instructionText + VoiceOver"]
+  Q --> S["Speech and Haptics<br/>Speech.say + Haptics"]
 
 ```
