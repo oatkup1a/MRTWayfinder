@@ -53,6 +53,7 @@ struct NavigatorView: View {
         maxSamplesPerBeacon: 25
     )
 
+    // Note: @StateObject can't be initialized from @AppStorage here; we sync driver mode in onAppear/onChange.
     @StateObject private var driver = BeaconDriver(initialMode: .mock)
 
     let speech = Speech()
@@ -323,7 +324,7 @@ struct NavigatorView: View {
                     "Signal weak. Please stop and hold your phone still."
                 instructionText = msg
                 Haptics.warn()
-                speak(msg)
+                maybeAnnounce(msg)
             }
             posText = "—"
             return

@@ -13,7 +13,6 @@ final class BeaconDriver: ObservableObject {
     private let real = BeaconManager()
 
     private(set) var source: any BeaconSource = MockBeaconManager() // dummy, replaced in init
-    private var cancellables = Set<AnyCancellable>()
 
     // Public publisher for the active source
     var latestPublisher: AnyPublisher<[BeaconReading], Never> {

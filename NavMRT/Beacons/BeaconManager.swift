@@ -3,8 +3,11 @@ import CoreLocation
 import Foundation
 
 final class BeaconManager: NSObject, ObservableObject, BeaconSource {
-    var isRunning: Bool = false
-    
+    var isRunning: Bool { startRequested && isRanging }
+    private var startRequested = false
+
+    private let mapQueue = DispatchQueue(label: "navmrt.beacon.latestMap")
+
     @Published var latest: [BeaconReading] = []
 
     var latestPublisher: AnyPublisher<[BeaconReading], Never> {
@@ -38,7 +41,6 @@ final class BeaconManager: NSObject, ObservableObject, BeaconSource {
     }
 
     func start() {
-
         guard !constraints.isEmpty else {
             print(
                 "BeaconManager.start: no constraints (did you call configure?)"
@@ -46,13 +48,11 @@ final class BeaconManager: NSObject, ObservableObject, BeaconSource {
             return
         }
 
-        guard !isRanging else { return }
-        isRanging = true
+        startRequested = true
 
         let status = locationManager.authorizationStatus
         if status == .notDetermined {
             locationManager.requestWhenInUseAuthorization()
-            // ranging will start after authorization callback
             return
         }
 
@@ -63,30 +63,17 @@ final class BeaconManager: NSObject, ObservableObject, BeaconSource {
         }
 
         startRangingNow()
-
-        latestMap.removeAll()
-        latest = []
-
-        publishTimer?.invalidate()
-        publishTimer = Timer.scheduledTimer(
-            withTimeInterval: publishInterval,
-            repeats: true
-        ) { [weak self] _ in
-            guard let self else { return }
-            let now = Date()
-
-            // optional: remove stale readings
-            self.latestMap = self.latestMap.filter {
-                now.timeIntervalSince($0.value.ts) < 2.0
-            }
-
-            self.latest = Array(self.latestMap.values)
-        }
     }
 
     private func startRangingNow() {
-        latestMap.removeAll()
-        latest = []
+        guard startRequested else { return }
+        guard !isRanging else { return }
+        isRanging = true
+
+        mapQueue.async {
+            self.latestMap.removeAll()
+            DispatchQueue.main.async { self.latest = [] }
+        }
 
         for c in constraints {
             locationManager.startRangingBeacons(satisfying: c)
@@ -99,25 +86,40 @@ final class BeaconManager: NSObject, ObservableObject, BeaconSource {
         ) { [weak self] _ in
             guard let self else { return }
             let now = Date()
-            self.latestMap = self.latestMap.filter {
-                now.timeIntervalSince($0.value.ts) < 2.0
+
+            self.mapQueue.async {
+                self.latestMap = self.latestMap.filter {
+                    now.timeIntervalSince($0.value.ts) < 2.0
+                }
+                let snapshot = self.latestMap.values.sorted { $0.id < $1.id }
+                DispatchQueue.main.async { self.latest = snapshot }
             }
-            self.latest = self.latestMap.values.sorted { $0.id < $1.id }
         }
     }
 
     func stop() {
-        guard isRanging else { return }
+        startRequested = false
+
+        guard isRanging else {
+            latest = []
+            return
+        }
+
         isRanging = false
+
         for c in constraints {
             locationManager.stopRangingBeacons(satisfying: c)
         }
+
         publishTimer?.invalidate()
         publishTimer = nil
-        latestMap.removeAll()
 
-        latest = []
+        mapQueue.async {
+            self.latestMap.removeAll()
+            DispatchQueue.main.async { self.latest = [] }
+        }
     }
+
 }
 
 extension BeaconManager: CLLocationManagerDelegate {
@@ -125,6 +127,7 @@ extension BeaconManager: CLLocationManagerDelegate {
         let status = manager.authorizationStatus
         print("Location auth:", status.rawValue)
 
+        guard startRequested else { return }
         if status == .authorizedWhenInUse || status == .authorizedAlways {
             startRangingNow()
         }
@@ -136,16 +139,16 @@ extension BeaconManager: CLLocationManagerDelegate {
         satisfying constraint: CLBeaconIdentityConstraint
     ) {
         let now = Date()
-        for cl in beacons where cl.rssi != 0 {
-            let r = BeaconReading(from: cl)
-            latestMap[r.id] = BeaconReading(id: r.id, rssi: r.rssi, ts: now)
-        }
-    }
 
-    func locationManager(
-        _ manager: CLLocationManager,
-        didFailWithError error: Error
-    ) {
-        print("Beacon ranging error:", error.localizedDescription)
+        mapQueue.async {
+            for cl in beacons where cl.rssi != 0 {
+                let r = BeaconReading(from: cl)
+                self.latestMap[r.id] = BeaconReading(
+                    id: r.id,
+                    rssi: r.rssi,
+                    ts: now
+                )
+            }
+        }
     }
 }

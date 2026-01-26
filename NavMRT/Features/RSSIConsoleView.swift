@@ -22,7 +22,11 @@ struct RSSIConsoleView: View {
                 }
                 return true
             })
-            .throttle(for: .milliseconds(200), scheduler: RunLoop.main, latest: true)
+            .throttle(
+                for: .milliseconds(200),
+                scheduler: RunLoop.main,
+                latest: true
+            )
             .eraseToAnyPublisher()
     }
 
@@ -44,7 +48,10 @@ struct RSSIConsoleView: View {
     }
 
     // NEW
-    @State private var buffer = BeaconSignalBuffer(windowSeconds: 3.0, maxSamplesPerBeacon: 25)
+    @State private var buffer = BeaconSignalBuffer(
+        windowSeconds: 3.0,
+        maxSamplesPerBeacon: 25
+    )
     @State private var sorted: [BeaconStats] = []
 
     @State private var bestOverlap: Int = 0
@@ -87,26 +94,51 @@ struct RSSIConsoleView: View {
                         )
                     } label: {
                         HStack(spacing: 12) {
-                            Text(BeaconReading(id: s.id, rssi: s.rawLatest, ts: s.lastSeen).identifierShort)
-                                .font(.system(.body, design: .monospaced))
-                                .lineLimit(1)
+                            Text(
+                                BeaconReading(
+                                    id: s.id,
+                                    rssi: s.rawLatest,
+                                    ts: s.lastSeen
+                                ).identifierShort
+                            )
+                            .font(.system(.body, design: .monospaced))
+                            .lineLimit(1)
 
                             Spacer()
 
                             VStack(alignment: .trailing, spacing: 2) {
                                 Text("raw \(s.rawLatest)")
-                                    .font(.system(.caption, design: .monospaced))
-                                Text(String(format: "med %.1f  σ %.1f", s.median, s.stdDev))
-                                    .font(.system(.caption, design: .monospaced))
-                                Text(String(format: "n %d  ema %.1f", s.sampleCount, s.ema))
-                                    .font(.system(.caption2, design: .monospaced))
-                                    .foregroundStyle(.secondary)
+                                    .font(
+                                        .system(.caption, design: .monospaced)
+                                    )
+                                Text(
+                                    String(
+                                        format: "med %.1f  σ %.1f",
+                                        s.median,
+                                        s.stdDev
+                                    )
+                                )
+                                .font(.system(.caption, design: .monospaced))
+                                Text(
+                                    String(
+                                        format: "n %d  ema %.1f",
+                                        s.sampleCount,
+                                        s.ema
+                                    )
+                                )
+                                .font(.system(.caption2, design: .monospaced))
+                                .foregroundStyle(.secondary)
                                 Text(ts.string(from: s.lastSeen))
-                                    .font(.system(.caption2, design: .monospaced))
+                                    .font(
+                                        .system(.caption2, design: .monospaced)
+                                    )
                                     .foregroundStyle(.secondary)
                             }
                         }
-                        .opacity(Date().timeIntervalSince(s.lastSeen) < 1.5 ? 1.0 : 0.5)
+                        .opacity(
+                            Date().timeIntervalSince(s.lastSeen) < 1.5
+                                ? 1.0 : 0.5
+                        )
                     }
                 }
             }
@@ -116,7 +148,10 @@ struct RSSIConsoleView: View {
         .onDisappear { stopActive() }
 
         .onChange(of: useMockBeacons) { _, _ in
-            buffer = BeaconSignalBuffer(windowSeconds: 3.0, maxSamplesPerBeacon: 25)
+            buffer = BeaconSignalBuffer(
+                windowSeconds: 3.0,
+                maxSamplesPerBeacon: 25
+            )
             sorted.removeAll()
             bestOverlap = 0
             readingCount = 0
@@ -125,10 +160,10 @@ struct RSSIConsoleView: View {
 
         .onReceive(uiPublisher) { readings in
             let now = Date()
-            readingCount = buffer.medianVector(minSamples: 1, maxAge: 5.0, now: now).count
-
             buffer.ingest(readings, now: now)
             buffer.pruneStale(now: now, staleAfter: 5.0)
+            readingCount =
+                buffer.medianVector(minSamples: 1, maxAge: 5.0, now: now).count
 
             // strongest first by median (or ema)
             sorted = buffer.allStatsSorted { $0.median > $1.median }
@@ -138,16 +173,16 @@ struct RSSIConsoleView: View {
                 lastOverlapUpdate = now
 
                 let fps = DataStore.shared.fingerprints
-                let currentKeys = Set(buffer.medianVector(minSamples: 3, maxAge: 1.5, now: now).keys)
+                let currentKeys = Set(
+                    buffer.medianVector(minSamples: 3, maxAge: 1.5, now: now)
+                        .keys
+                )
 
-                bestOverlap = fps.map { fp in
-                    Set(fp.rssi.keys).intersection(currentKeys).count
-                }.max() ?? 0
+                bestOverlap =
+                    fps.map { fp in
+                        Set(fp.rssi.keys).intersection(currentKeys).count
+                    }.max() ?? 0
             }
-
-            // If you want: show what KNN would see
-            // let currentVec = buffer.medianVector()
-            // let est = KNNPositioner.estimate(current: currentVec, dataset: DataStore.shared.fingerprints, k: 3)
         }
     }
 }

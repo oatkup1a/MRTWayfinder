@@ -1,4 +1,5 @@
 import Foundation
+
 struct KNNPositioner {
     static func estimate(
         current: [String: Double],
@@ -45,11 +46,20 @@ struct KNNPositioner {
             .max(by: { $0.value.count < $1.value.count })?.key
             ?? first.fp.loc.floor
 
-        // Confidence: distance margin between best and 2nd best (0..1-ish, higher is better)
-        let d1 = top.first?.d ?? 1e9
-        let d2 = top.dropFirst().first?.d ?? (d1 * 1.2)
-        let margin = max(0.0, min(1.0, (d2 - d1) / max(d2, 1e-9)))
-
+        // Confidence: distance margin between best and 2nd best (0..1-ish, higher is better).
+        // If only one match is available, we cannot compute a margin, so confidence is 0.
+        let margin: Double
+        if top.count < 2 {
+            margin = 0.0
+        } else {
+            let d1 = top[0].d
+            let d2 = top[1].d
+            if d2 > 0 {
+                margin = max(0.0, min(1.0, (d2 - d1) / d2))
+            } else {
+                margin = 0.0
+            }
+        }
         // Also return overlap of best match
         let overlap = top.first?.overlap ?? 0
 
