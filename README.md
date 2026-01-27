@@ -59,32 +59,48 @@ This project focuses on **accessibility, robustness, and real-world deployabilit
 ```mermaid
 flowchart TD
   A["App Launch"] --> B["SwiftUI App Entry<br/>NavMRTApp.swift"]
-  B --> C["Start and Goal Selection UI<br/>Select startId and goalId"]
+  B --> C["Start & Goal Selection UI<br/>startId / goalId"]
   C --> D["NavigatorView"]
 
+  %% Static data
   D --> E["Load Static Data<br/>DataStore.shared<br/>graph / fingerprints / beacons / places"]
+
+  %% Routing
   D --> F["Route Planning<br/>GraphRouter.shortestPath"]
 
+  %% Beacon acquisition
   D --> G{Beacon Source}
-  G -->|Mock| H["MockBeaconManager<br/>Timer generates BeaconReading"]
-  G -->|Real| I["BeaconManager CoreLocation<br/>startRangingBeacons"]
+  G -->|Mock| H["MockBeaconManager<br/>Timer → BeaconReading"]
+  G -->|Real| I["BeaconManager<br/>CoreLocation ranging<br/>merged + rate-limited publish"]
 
-  H --> J["Receive Beacon Readings"]
+  H --> J["Beacon Readings"]
   I --> J
 
-  J --> K["RSSI Smoothing<br/>RSSIEMA.update"]
-  K --> L["Localization<br/>KNNPositioner.estimate<br/>x y floor"]
-  L --> M["Navigation State Machine"]
+  %% Signal processing
+  J --> K["Rolling RSSI Window<br/>BeaconSignalBuffer<br/>median / stddev / EMA"]
 
-  M --> N["Floor Transition Handling<br/>expectedFloor gating"]
-  M --> O["Off-route Detection<br/>distance to segment + reroute"]
-  M --> P["Arrival and Turn Instructions<br/>angle geometry + segment advance"]
+  %% Localization
+  K --> L["Localization<br/>KNNPositioner.estimate"]
+  L --> L2["PositionFix<br/>x y floor confidence overlap ts"]
 
-  N --> Q["Outputs"]
-  O --> Q
-  P --> Q
+  %% Gating
+  L2 --> M{Confidence & Overlap OK?}
+  M -->|No| M1["Signal Weak Handling<br/>rate-limited speech + haptics"]
+  M -->|Yes| N["Navigation State Machine"]
 
-  Q --> R["UI Text<br/>instructionText + VoiceOver"]
-  Q --> S["Speech and Haptics<br/>Speech.say + Haptics"]
+  %% Navigation logic
+  N --> O["Floor Transition Handling<br/>expectedFloor gating"]
+  N --> P["Off-route Detection<br/>distance-to-segment<br/>confidence-gated reroute"]
+  N --> Q["Arrival & Turn Instructions<br/>geometry + segment advance"]
+
+  %% Outputs
+  O --> R["Outputs"]
+  P --> R
+  Q --> R
+  M1 --> R
+
+  R --> S["UI Text<br/>instructionText / accessibility"]
+  R --> T["Speech & Haptics<br/>Speech.say + Haptics"]
+
 
 ```
