@@ -7,27 +7,29 @@ final class BeaconDriver: ObservableObject {
         case real
     }
 
-    @Published private(set) var mode: Mode = .mock
+    @Published private(set) var mode: Mode
 
     private let mock = MockBeaconManager()
     private let real = BeaconManager()
 
-    private(set) var source: any BeaconSource = MockBeaconManager() // dummy, replaced in init
+    private var realConfigured = false
 
-    // Public publisher for the active source
+    private let subject = CurrentValueSubject<[BeaconReading], Never>([])
+    private var forwardingCancellable: AnyCancellable?
+
+    /// Stable publisher: subscribers keep receiving updates even when mode changes.
     var latestPublisher: AnyPublisher<[BeaconReading], Never> {
-        switch mode {
-        case .mock: return mock.latestPublisher
-        case .real: return real.latestPublisher
-        }
+        subject.eraseToAnyPublisher()
     }
 
     init(initialMode: Mode) {
-        setMode(initialMode, startIfRunning: false)
+        self.mode = initialMode
+        attachForwarder(for: initialMode)
     }
 
     func configureReal(registry: BeaconRegistry) {
         real.configure(beacons: registry)
+        realConfigured = true
     }
 
     func setMode(_ newMode: Mode, startIfRunning: Bool) {
@@ -36,25 +38,54 @@ final class BeaconDriver: ObservableObject {
         real.stop()
 
         mode = newMode
-        switch newMode {
-        case .mock:
-            source = mock
-            if startIfRunning { mock.start() }
-        case .real:
-            source = real
-            if startIfRunning { real.start() }
+        attachForwarder(for: newMode)
+
+        if startIfRunning {
+            start()
+        } else {
+            // ensure UI clears immediately on mode change when not running
+            subject.send([])
         }
     }
 
     func start() {
         switch mode {
-        case .mock: mock.start()
-        case .real: real.start()
+        case .mock:
+            mock.start()
+        case .real:
+            guard realConfigured else {
+                subject.send([])
+                return
+            }
+            
+            real.start()
         }
     }
 
     func stop() {
         mock.stop()
         real.stop()
+        subject.send([])
+    }
+
+    // MARK: - Private
+
+    private func attachForwarder(for mode: Mode) {
+        forwardingCancellable?.cancel()
+
+        let upstream: AnyPublisher<[BeaconReading], Never> = {
+            switch mode {
+            case .mock: return mock.latestPublisher
+            case .real: return real.latestPublisher
+            }
+        }()
+
+        // Forward upstream into a stable subject
+        forwardingCancellable =
+            upstream
+            .receive(on: RunLoop.main)  // guarantee main-thread delivery to UI
+            .sink { [weak self] readings in
+                self?.subject.send(readings)
+            }
     }
 }

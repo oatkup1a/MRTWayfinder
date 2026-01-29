@@ -7,12 +7,14 @@ struct RSSIConsoleView: View {
     @StateObject private var mockBM = MockBeaconManager()
     @StateObject private var realBM = BeaconManager()
 
-    private var activePublisher: AnyPublisher<[BeaconReading], Never> {
-        useMockBeacons ? mockBM.latestPublisher : realBM.latestPublisher
-    }
+    // Stable stream for the view (does not change when mode flips)
+    @State private var readingsSubject = CurrentValueSubject<
+        [BeaconReading], Never
+    >([])
+    @State private var forwardCancellable: AnyCancellable?
 
     private var uiPublisher: AnyPublisher<[BeaconReading], Never> {
-        activePublisher
+        readingsSubject
             .map { $0.sorted { $0.id < $1.id } }
             .removeDuplicates(by: { a, b in
                 guard a.count == b.count else { return false }
@@ -22,6 +24,7 @@ struct RSSIConsoleView: View {
                 }
                 return true
             })
+            .receive(on: RunLoop.main)
             .throttle(
                 for: .milliseconds(200),
                 scheduler: RunLoop.main,
@@ -30,9 +33,27 @@ struct RSSIConsoleView: View {
             .eraseToAnyPublisher()
     }
 
+    private func attachForwarder() {
+        forwardCancellable?.cancel()
+
+        let upstream: AnyPublisher<[BeaconReading], Never> =
+            useMockBeacons ? mockBM.latestPublisher : realBM.latestPublisher
+
+        forwardCancellable =
+            upstream
+            .receive(on: RunLoop.main)
+            .sink { readings in
+                readingsSubject.send(readings)
+            }
+    }
+
     private func startActive() {
+        // stop both first (prevents double streams)
         mockBM.stop()
         realBM.stop()
+
+        readingsSubject.send([])
+        attachForwarder()
 
         if useMockBeacons {
             mockBM.start()
@@ -45,9 +66,11 @@ struct RSSIConsoleView: View {
     private func stopActive() {
         mockBM.stop()
         realBM.stop()
+        forwardCancellable?.cancel()
+        readingsSubject.send([])
     }
 
-    // NEW
+    // Buffer + derived UI
     @State private var buffer = BeaconSignalBuffer(
         windowSeconds: 3.0,
         maxSamplesPerBeacon: 25
@@ -84,12 +107,14 @@ struct RSSIConsoleView: View {
             Section("Signals") {
                 ForEach(sorted, id: \.id) { s in
                     NavigationLink {
-                        // adapt to your existing BeaconDetailView
-                        // Convert buffer samples to your RSSISample if needed
                         BeaconDetailView(
                             beaconId: s.id,
                             samples: buffer.sampleHistory(for: s.id).map {
-                                RSSISample(ts: $0.ts, raw: $0.rssi, ema: $0.ema)
+                                RSSISample(
+                                    ts: $0.ts,
+                                    raw: $0.rssi,
+                                    ema: $0.ema
+                                )
                             }
                         )
                     } label: {
@@ -160,12 +185,15 @@ struct RSSIConsoleView: View {
 
         .onReceive(uiPublisher) { readings in
             let now = Date()
+
             buffer.ingest(readings, now: now)
             buffer.pruneStale(now: now, staleAfter: 5.0)
+
+            // after ingest+prune (not one tick behind)
             readingCount =
                 buffer.medianVector(minSamples: 1, maxAge: 5.0, now: now).count
 
-            // strongest first by median (or ema)
+            // strongest first by median
             sorted = buffer.allStatsSorted { $0.median > $1.median }
 
             // Overlap at 2 Hz

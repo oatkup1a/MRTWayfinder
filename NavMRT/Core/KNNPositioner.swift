@@ -31,11 +31,11 @@ struct KNNPositioner {
             let r = dist(current, fp.rssi)
             return (fp, r.d, r.overlap)
         }
-        .sorted { $0.d < $1.d }
-
-        guard let first = scored.first, first.d < 1e9 else { return nil }
-
-        let top = Array(scored.prefix(max(1, k)))
+        // Filter out fingerprints with insufficient overlap (encoded as distance >= 1e9)
+        let validScored = scored.filter { $0.d < 1e9 }
+            .sorted { $0.d < $1.d }
+        guard let first = validScored.first else { return nil }
+        let top = Array(validScored.prefix(max(1, k)))
 
         let c = Double(top.count)
         let x = top.reduce(0.0) { $0 + $1.fp.loc.x } / c

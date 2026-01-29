@@ -12,6 +12,7 @@ struct BeaconStats {
 }
 
 final class BeaconSignalBuffer {
+
     struct Sample {
         let ts: Date
         let rssi: Int
@@ -30,14 +31,18 @@ final class BeaconSignalBuffer {
     }
 
     func ingest(_ readings: [BeaconReading], now: Date = Date()) {
+        assert(Thread.isMainThread)
         for r in readings {
             let e = ema.update(id: r.id, rssi: r.rssi)
-            samples[r.id, default: []].append(Sample(ts: now, rssi: r.rssi, ema: e))
+            samples[r.id, default: []].append(
+                Sample(ts: now, rssi: r.rssi, ema: e)
+            )
             trim(id: r.id, now: now)
         }
     }
 
     func pruneStale(now: Date = Date(), staleAfter: TimeInterval = 5.0) {
+        assert(Thread.isMainThread)
         samples = samples.filter { (_, arr) in
             guard let last = arr.last?.ts else { return false }
             return now.timeIntervalSince(last) < staleAfter
@@ -48,7 +53,15 @@ final class BeaconSignalBuffer {
         guard let arr = samples[id], let last = arr.last else { return nil }
         let values = arr.map { Double($0.rssi) }
         let mean = values.reduce(0.0, +) / Double(values.count)
-        let variance = values.reduce(0.0) { $0 + pow($1 - mean, 2) } / Double(values.count)
+        let variance: Double
+        
+        if values.count > 1 {
+            let squaredDiffSum = values.reduce(0.0) { $0 + pow($1 - mean, 2) }
+            variance = squaredDiffSum / Double(values.count - 1)
+        } else {
+            variance = 0.0
+        }
+        
         let std = sqrt(variance)
         let med = median(values)
 
@@ -64,14 +77,22 @@ final class BeaconSignalBuffer {
         )
     }
 
-    func allStatsSorted(by sort: (BeaconStats, BeaconStats) -> Bool) -> [BeaconStats] {
+    func allStatsSorted(by sort: (BeaconStats, BeaconStats) -> Bool)
+        -> [BeaconStats]
+    {
+        assert(Thread.isMainThread)
         let ids = samples.keys
         let list = ids.compactMap { stats(for: $0) }
         return list.sorted(by: sort)
     }
 
     /// Use this as KNN input: median RSSI per beacon.
-    func medianVector(minSamples: Int = 3, maxAge: TimeInterval = 1.5, now: Date = Date()) -> [String: Double] {
+    func medianVector(
+        minSamples: Int = 3,
+        maxAge: TimeInterval = 1.5,
+        now: Date = Date()
+    ) -> [String: Double] {
+        assert(Thread.isMainThread)
         var out: [String: Double] = [:]
         for (id, arr) in samples {
             guard let last = arr.last else { continue }
@@ -117,7 +138,7 @@ final class BeaconSignalBuffer {
         if n % 2 == 1 {
             return s[n / 2]
         } else {
-            return (s[n/2 - 1] + s[n/2]) / 2.0
+            return (s[n / 2 - 1] + s[n / 2]) / 2.0
         }
     }
 }

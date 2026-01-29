@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 
 struct NavigatorView: View {
@@ -40,6 +41,19 @@ struct NavigatorView: View {
     @State private var lastFloorAnnounce = Date.distantPast
     let floorAnnounceCooldown: TimeInterval = 6
 
+    @State private var lastSignalAnnounce = Date.distantPast
+    let signalAnnounceCooldown: TimeInterval = 6
+
+    private func maybeAnnounceSignal(_ s: String) {
+        guard !voiceOverEnabled else { return }
+        if Date().timeIntervalSince(lastSignalAnnounce) > signalAnnounceCooldown
+        {
+            Haptics.warn()
+            speech.say(s)
+            lastSignalAnnounce = Date()
+        }
+    }
+
     // Formatting
     private let tsFormatter: DateFormatter = {
         let f = DateFormatter()
@@ -73,6 +87,11 @@ struct NavigatorView: View {
         return path[idx]
     }
 
+    // Reset Buffer Helper function
+    private func resetBuffer() {
+        buffer = BeaconSignalBuffer(windowSeconds: 3.0, maxSamplesPerBeacon: 25)
+    }
+
     var body: some View {
 
         VStack(spacing: 32) {
@@ -99,10 +118,7 @@ struct NavigatorView: View {
             VStack(spacing: 16) {
                 Button {
                     driver.start()
-                    buffer = BeaconSignalBuffer(
-                        windowSeconds: 3.0,
-                        maxSamplesPerBeacon: 25
-                    )
+                    resetBuffer()
                     isRunning = true
                     speak("Navigation started")
                     instructionText =
@@ -120,10 +136,7 @@ struct NavigatorView: View {
 
                 Button {
                     driver.stop()
-                    buffer = BeaconSignalBuffer(
-                        windowSeconds: 3.0,
-                        maxSamplesPerBeacon: 25
-                    )
+                    resetBuffer()
                     isRunning = false
                     speak("Navigation stopped")
                     instructionText = "Navigation stopped."
@@ -159,15 +172,20 @@ struct NavigatorView: View {
             .accessibilityHidden(true)
             .onChange(of: useMockBeacons) { _, newValue in
                 let wasRunning = isRunning
-                driver.setMode(newValue ? .mock : .real, startIfRunning: wasRunning)
-                buffer = BeaconSignalBuffer(windowSeconds: 3.0, maxSamplesPerBeacon: 25)
+                driver.setMode(
+                    newValue ? .mock : .real,
+                    startIfRunning: wasRunning
+                )
+                buffer = BeaconSignalBuffer(
+                    windowSeconds: 3.0,
+                    maxSamplesPerBeacon: 25
+                )
             }
 
             Spacer()
         }
         .padding()
         .onAppear {
-
             driver.configureReal(registry: DataStore.shared.beacons)
             driver.setMode(
                 useMockBeacons ? .mock : .real,
@@ -196,10 +214,7 @@ struct NavigatorView: View {
                 // Auto-start decision
                 if autoStartNav && !isRunning {
                     driver.start()
-                    buffer = BeaconSignalBuffer(
-                        windowSeconds: 3.0,
-                        maxSamplesPerBeacon: 25
-                    )
+                    resetBuffer()
                     isRunning = true
                     speak("Navigation started")
                     instructionText =
@@ -226,13 +241,11 @@ struct NavigatorView: View {
         .onDisappear {
             print("NavigatorView disappeared – stop mock")
             driver.stop()
-            buffer = BeaconSignalBuffer(
-                windowSeconds: 3.0,
-                maxSamplesPerBeacon: 25
-            )
+            resetBuffer()
             isRunning = false
         }
-        .onReceive(driver.latestPublisher) { readings in
+        .onReceive(driver.latestPublisher.receive(on: RunLoop.main)) {
+            readings in
             handleReadings(readings)
         }
         .navigationTitle("Guided Navigation")
@@ -324,7 +337,7 @@ struct NavigatorView: View {
                     "Signal weak. Please stop and hold your phone still."
                 instructionText = msg
                 Haptics.warn()
-                maybeAnnounce(msg)
+                maybeAnnounceSignal(msg)
             }
             posText = "—"
             return
@@ -359,7 +372,9 @@ struct NavigatorView: View {
             )
             instructionText = "Signal unstable. Please hold your phone steady."
             // Don't speak too often; reuse your existing announcement limiter
-            maybeAnnounce("Signal unstable. Please hold your phone steady.")
+            maybeAnnounceSignal(
+                "Signal unstable. Please hold your phone steady."
+            )
             return
         }
 

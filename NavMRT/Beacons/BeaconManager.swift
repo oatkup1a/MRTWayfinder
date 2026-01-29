@@ -4,6 +4,7 @@ import Foundation
 
 final class BeaconManager: NSObject, ObservableObject, BeaconSource {
     var isRunning: Bool { startRequested && isRanging }
+
     private var startRequested = false
 
     private let mapQueue = DispatchQueue(label: "navmrt.beacon.latestMap")
@@ -85,14 +86,22 @@ final class BeaconManager: NSObject, ObservableObject, BeaconSource {
             repeats: true
         ) { [weak self] _ in
             guard let self else { return }
-            let now = Date()
 
-            self.mapQueue.async {
+            self.mapQueue.async { [weak self] in
+                guard let self else { return }
+                guard self.isRanging else { return }  // stop() might have run
+
+                let now = Date()
                 self.latestMap = self.latestMap.filter {
                     now.timeIntervalSince($0.value.ts) < 2.0
                 }
+
                 let snapshot = self.latestMap.values.sorted { $0.id < $1.id }
-                DispatchQueue.main.async { self.latest = snapshot }
+                DispatchQueue.main.async { [weak self] in
+                    guard let self else { return }
+                    guard self.isRanging else { return }
+                    self.latest = snapshot
+                }
             }
         }
     }
@@ -135,20 +144,9 @@ extension BeaconManager: CLLocationManagerDelegate {
 
     func locationManager(
         _ manager: CLLocationManager,
-        didRange beacons: [CLBeacon],
-        satisfying constraint: CLBeaconIdentityConstraint
+        didFailWithError error: Error
     ) {
-        let now = Date()
-
-        mapQueue.async {
-            for cl in beacons where cl.rssi != 0 {
-                let r = BeaconReading(from: cl)
-                self.latestMap[r.id] = BeaconReading(
-                    id: r.id,
-                    rssi: r.rssi,
-                    ts: now
-                )
-            }
-        }
+        print("Beacon ranging error:", error.localizedDescription)
     }
+
 }
