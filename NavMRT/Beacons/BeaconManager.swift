@@ -81,15 +81,16 @@ final class BeaconManager: NSObject, ObservableObject, BeaconSource {
         }
 
         publishTimer?.invalidate()
-        publishTimer = Timer.scheduledTimer(
-            withTimeInterval: publishInterval,
+
+        let timer = Timer(
+            timeInterval: publishInterval,
             repeats: true
         ) { [weak self] _ in
             guard let self else { return }
 
             self.mapQueue.async { [weak self] in
                 guard let self else { return }
-                guard self.isRanging else { return }  // stop() might have run
+                guard self.isRanging else { return }
 
                 let now = Date()
                 self.latestMap = self.latestMap.filter {
@@ -104,6 +105,10 @@ final class BeaconManager: NSObject, ObservableObject, BeaconSource {
                 }
             }
         }
+
+        publishTimer = timer
+        RunLoop.main.add(timer, forMode: .common)
+
     }
 
     func stop() {

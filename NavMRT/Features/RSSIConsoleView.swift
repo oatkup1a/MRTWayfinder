@@ -76,7 +76,6 @@ struct RSSIConsoleView: View {
         maxSamplesPerBeacon: 25
     )
     @State private var sorted: [BeaconStats] = []
-
     @State private var bestOverlap: Int = 0
     @State private var readingCount: Int = 0
 

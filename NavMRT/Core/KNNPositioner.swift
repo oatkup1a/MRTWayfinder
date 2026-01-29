@@ -59,8 +59,13 @@ struct KNNPositioner {
             let d1 = top[0].d
             let d2 = top[1].d
             if d2 > 0 {
+                // Normal case: compute normalized margin between best and 2nd best.
                 margin = max(0.0, min(1.0, (d2 - d1) / d2))
+            } else if d1 == 0 && d2 == 0 {
+                // Edge case: multiple perfect matches; treat as high confidence.
+                margin = 1.0
             } else {
+                // Fallback for unexpected non-positive d2 values.
                 margin = 0.0
             }
         }

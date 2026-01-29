@@ -108,6 +108,12 @@ final class BeaconSignalBuffer {
     func sampleHistory(for id: String) -> [Sample] {
         samples[id] ?? []
     }
+    
+    func reset() {
+        assert(Thread.isMainThread)
+        samples.removeAll()
+        ema.reset()
+    }
 
     // MARK: - Helpers
 

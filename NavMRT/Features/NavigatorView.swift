@@ -76,8 +76,8 @@ struct NavigatorView: View {
 
     // Thresholds / flags
     let arrivalThreshold: Double = 1.5
-    @State private var posText = "—"  // dev detail
-    @State private var instructionText = "Press Start to begin navigation"  // user text
+    @State private var posText = "—"
+    @State private var instructionText = "Press Start to begin navigation"
     @State private var lastAnnounce = Date.distantPast
     @State private var arrived = false
 
@@ -91,6 +91,29 @@ struct NavigatorView: View {
     private func resetBuffer() {
         buffer = BeaconSignalBuffer(windowSeconds: 3.0, maxSamplesPerBeacon: 25)
     }
+    
+    private func resetNavigationState() {
+        // Signal / quality
+        offRouteStreak = 0
+        positionLost = false
+        lastGoodFixAt = .distantPast
+
+        // Floor / reroute
+        expectedFloor = nil
+        lastFloorAnnounce = .distantPast
+        lastOffRouteAnnounce = .distantPast
+
+        // Route progress
+        currentSegmentIndex = 0
+        arrived = false
+
+        // Announce timers
+        lastAnnounce = .distantPast
+
+        // UI text
+        posText = "—"
+    }
+
 
     var body: some View {
 
@@ -119,6 +142,7 @@ struct NavigatorView: View {
                 Button {
                     driver.start()
                     resetBuffer()
+                    resetNavigationState()
                     isRunning = true
                     speak("Navigation started")
                     instructionText =
@@ -137,6 +161,7 @@ struct NavigatorView: View {
                 Button {
                     driver.stop()
                     resetBuffer()
+                    resetNavigationState()
                     isRunning = false
                     speak("Navigation stopped")
                     instructionText = "Navigation stopped."
@@ -176,10 +201,8 @@ struct NavigatorView: View {
                     newValue ? .mock : .real,
                     startIfRunning: wasRunning
                 )
-                buffer = BeaconSignalBuffer(
-                    windowSeconds: 3.0,
-                    maxSamplesPerBeacon: 25
-                )
+                resetBuffer()
+                resetNavigationState()
             }
 
             Spacer()
@@ -215,6 +238,7 @@ struct NavigatorView: View {
                 if autoStartNav && !isRunning {
                     driver.start()
                     resetBuffer()
+                    resetNavigationState()
                     isRunning = true
                     speak("Navigation started")
                     instructionText =
@@ -242,6 +266,7 @@ struct NavigatorView: View {
             print("NavigatorView disappeared – stop mock")
             driver.stop()
             resetBuffer()
+            resetNavigationState()
             isRunning = false
         }
         .onReceive(driver.latestPublisher.receive(on: RunLoop.main)) {
