@@ -1,5 +1,5 @@
-import Foundation
 import CoreLocation
+import Foundation
 
 struct BeaconReading: Identifiable {
     let id: String
@@ -15,11 +15,11 @@ struct BeaconReading: Identifiable {
 }
 
 extension BeaconReading {
-    init(from cl: CLBeacon) {
+    init(from cl: CLBeacon, ts: Date) {
         let uuid = cl.uuid.uuidString.uppercased()
         let id = "\(uuid):\(cl.major.intValue):\(cl.minor.intValue)"
         self.id = id
         self.rssi = cl.rssi
-        self.ts = Date()
+        self.ts = ts
     }
 }

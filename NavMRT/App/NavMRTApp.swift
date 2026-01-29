@@ -8,7 +8,7 @@ struct NavMRTApp: App {
                 List {
                     Section("For passengers") {
                         NavigationLink("Guided Navigation") {
-                            RouteSelectionView()   // user-oriented UI
+                            RouteSelectionView()  // user-oriented UI
                         }
                     }
 
@@ -21,7 +21,7 @@ struct NavMRTApp: App {
                     Section("App") {
                         NavigationLink("Settings") { SettingsView() }
                     }
-                    
+
                 }
                 .navigationTitle("NavMRT")
             }
