@@ -119,15 +119,9 @@ struct RSSIConsoleView: View {
                         )
                     } label: {
                         HStack(spacing: 12) {
-                            Text(
-                                BeaconReading(
-                                    id: s.id,
-                                    rssi: s.rawLatest,
-                                    ts: s.lastSeen
-                                ).identifierShort
-                            )
-                            .font(.system(.body, design: .monospaced))
-                            .lineLimit(1)
+                            Text(s.shortId)
+                                .font(.system(.body, design: .monospaced))
+                                .lineLimit(1)
 
                             Spacer()
 

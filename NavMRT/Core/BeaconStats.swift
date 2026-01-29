@@ -142,3 +142,12 @@ final class BeaconSignalBuffer {
         }
     }
 }
+
+extension BeaconStats {
+    var shortId: String {
+        let parts = id.split(separator: ":")
+        guard parts.count == 3 else { return id }
+        let uuid = parts[0].prefix(8)
+        return "\(uuid)…:\(parts[1]):\(parts[2])"
+    }
+}

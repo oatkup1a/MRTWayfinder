@@ -18,8 +18,12 @@ struct KNNPositioner {
             let overlap = common.count
             guard overlap >= 2 else { return (1e9, overlap) }  // require overlap
             let d = common.reduce(0.0) { s, key in
-                let va = a[key] ?? -100
-                let vb = Double(b[key] ?? -100)
+                assert(
+                    a[key] != nil && b[key] != nil,
+                    "Keys in `common` must exist in both dictionaries"
+                )
+                let va = a[key]!
+                let vb = Double(b[key]!)
                 let diff = va - vb
                 return s + diff * diff
             }
