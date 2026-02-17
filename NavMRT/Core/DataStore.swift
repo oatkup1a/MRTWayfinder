@@ -16,7 +16,17 @@ final class DataStore {
         }
     }
 
-    lazy var beacons: BeaconRegistry = load("beacons", as: BeaconRegistry.self)
+    lazy var beacons: BeaconRegistry = {
+        let registry = load("beacons", as: BeaconRegistry.self)
+
+        print("Loaded beacons from JSON:")
+        for b in registry.beacons {
+            print("\(b.uuid):\(b.major):\(b.minor)")
+        }
+
+        return registry
+    }()
+
     lazy var fingerprints: [Fingerprint] = load("fingerprints", as: [Fingerprint].self)
     lazy var graph: Graph = load("graph", as: Graph.self)
     lazy var places: PlaceCatalog = load("places", as: PlaceCatalog.self)

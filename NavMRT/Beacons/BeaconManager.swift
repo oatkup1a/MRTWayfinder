@@ -149,9 +149,28 @@ extension BeaconManager: CLLocationManagerDelegate {
 
     func locationManager(
         _ manager: CLLocationManager,
-        didFailWithError error: Error
+        didRange beacons: [CLBeacon],
+        satisfying constraint: CLBeaconIdentityConstraint
     ) {
-        print("Beacon ranging error:", error.localizedDescription)
+        print("didRange called, count:", beacons.count)
+
+        let now = Date()
+
+        mapQueue.async { [weak self] in
+            guard let self else { return }
+            guard self.isRanging else { return }
+
+            for cl in beacons {
+                guard cl.rssi != 0 else { continue }
+
+                let reading = BeaconReading(from: cl, ts: now)
+                print("Beacon detected:", reading.id, reading.rssi)
+
+                self.latestMap[reading.id] = reading
+            }
+        }
     }
+
+
 
 }
