@@ -59,6 +59,7 @@ struct RSSIConsoleView: View {
             mockBM.start()
         } else {
             realBM.configure(beacons: DataStore.shared.beacons)
+            print("Starting REAL beacons with \(DataStore.shared.beacons.beacons.count) constraints")
             realBM.start()
         }
     }

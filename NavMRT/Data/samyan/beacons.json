@@ -4,9 +4,9 @@
   "beacons": [
     {
       "id": "b01",
-      "uuid": "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE",
-      "major": 1,
-      "minor": 1,
+      "uuid": "FDA50693A4E24FB1AFCFC6EB07647825",
+      "major": 10011,
+      "minor": 19641,
       "txPower": -59,
       "x": 12.4,
       "y": 5.8,
