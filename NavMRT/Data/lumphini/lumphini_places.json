@@ -1,18 +1,18 @@
 {
   "N1": {
-    "name": "Concourse tactile junction",
+    "name": "Lumphini concourse tactile junction",
     "category": "junction",
     "startAllowed": true,
     "destAllowed": false
   },
   "N2": {
-    "name": "Hallway corner junction",
+    "name": "Lumphini hallway corner junction",
     "category": "junction",
     "startAllowed": false,
     "destAllowed": false
   },
   "E1": {
-    "name": "Elevator (to platforms)",
+    "name": "Lumphini elevator (to platforms)",
     "category": "elevator",
     "startAllowed": true,
     "destAllowed": true

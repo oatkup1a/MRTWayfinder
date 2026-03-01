@@ -7,53 +7,69 @@ final class MockBeaconManager: ObservableObject, BeaconSource {
     var latestPublisher: AnyPublisher<[BeaconReading], Never> {
         $latest.eraseToAnyPublisher()
     }
+
+    private struct Scenario {
+        let nodeIds: [String]
+        let secondsPerSegment: Int
+        let stationWaitSeconds: Int
+    }
+
     private var timer: Timer?
-    private var t: Double = 0
+    private var t: Int = 0
     private(set) var isRunning = false
 
-    func start() {
+    // Simulated station movement + in-train wait.
+    private var scenario = Scenario(
+        nodeIds: ["N1", "N2", "E1"],
+        secondsPerSegment: 6,
+        stationWaitSeconds: 12
+    )
 
+    private lazy var fingerprintByLabel: [String: [String: Int]] = {
+        let pairs: [(String, [String: Int])] = DataStore.shared.fingerprints.compactMap { fp in
+            guard let label = fp.label else { return nil }
+            return (label, fp.rssi)
+        }
+        return Dictionary(uniqueKeysWithValues: pairs)
+    }()
+
+    func configureJourney(startId: String, goalId: String) {
+        let routeKey = "\(startId)->\(goalId)"
+        let path = StationJourneyPlanner.mockedInStationPath(for: routeKey)
+        let cleaned = path.filter { fingerprintByLabel[$0] != nil }
+
+        if cleaned.count >= 2 {
+            scenario = Scenario(
+                nodeIds: cleaned,
+                secondsPerSegment: 6,
+                stationWaitSeconds: 12
+            )
+        } else {
+            scenario = Scenario(
+                nodeIds: ["N1", "N2", "E1"],
+                secondsPerSegment: 6,
+                stationWaitSeconds: 12
+            )
+        }
+
+        t = 0
+        print("MockBeaconManager configured route \(routeKey) with path \(scenario.nodeIds)")
+    }
+
+    func start() {
         guard !isRunning else {
             print("MockBeaconManager.start: already running")
             return
         }
+
         print("MockBeaconManager.start")
         isRunning = true
         t = 0
 
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) {
             [weak self] _ in
-            guard let self = self else { return }
-            self.t += 1.0
-
-            let uuid = "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE"  // keep as-is
-            let phase = Int(self.t)
-
-            let rssi1: Int
-            let rssi2: Int
-
-            switch phase {
-            case 0..<10:
-                rssi1 = -60
-                rssi2 = -75
-            case 10..<20:
-                rssi1 = -70
-                rssi2 = -70
-            default:
-                rssi1 = -80
-                rssi2 = -65
-            }
-
-            print("Mock phase \(phase): rssi1=\(rssi1), rssi2=\(rssi2)")
-
-            DispatchQueue.main.async {
-                self.latest = [
-                    BeaconReading(id: "\(uuid):1:1", rssi: rssi1, ts: Date()),
-                    BeaconReading(id: "\(uuid):1:2", rssi: rssi2, ts: Date()),
-                ]
-            }
+            self?.tick()
         }
-
     }
 
     func stop() {
@@ -66,5 +82,82 @@ final class MockBeaconManager: ObservableObject, BeaconSource {
         timer = nil
         isRunning = false
         latest = []
+    }
+
+    private func tick() {
+        defer { t += 1 }
+
+        guard scenario.nodeIds.count >= 2 else {
+            latest = []
+            return
+        }
+
+        let segmentCount = scenario.nodeIds.count - 1
+        let movingDuration = segmentCount * max(1, scenario.secondsPerSegment)
+        let totalCycle = movingDuration + max(0, scenario.stationWaitSeconds)
+        let cycleTime = totalCycle > 0 ? t % totalCycle : 0
+
+        let now = Date()
+
+        if cycleTime >= movingDuration {
+            // Train-wait phase at destination fingerprint.
+            let destinationNode = scenario.nodeIds.last!
+            latest = readings(at: destinationNode, progress: 1.0, now: now)
+            print("Mock phase train-wait at \(destinationNode)")
+            return
+        }
+
+        let segmentLength = max(1, scenario.secondsPerSegment)
+        let segmentIndex = min(segmentCount - 1, cycleTime / segmentLength)
+        let segmentProgress = Double(cycleTime % segmentLength) / Double(segmentLength)
+
+        let fromNode = scenario.nodeIds[segmentIndex]
+        let toNode = scenario.nodeIds[segmentIndex + 1]
+
+        latest = blendedReadings(
+            fromNode: fromNode,
+            toNode: toNode,
+            progress: segmentProgress,
+            now: now
+        )
+
+        let pct = Int(segmentProgress * 100)
+        print("Mock moving \(fromNode)->\(toNode) \(pct)%")
+    }
+
+    private func readings(at nodeId: String, progress: Double, now: Date) -> [BeaconReading] {
+        guard let rssiByBeacon = fingerprintByLabel[nodeId] else { return [] }
+        let noise = (t % 3) - 1
+        return rssiByBeacon
+            .map { (id: $0.key, rssi: $0.value + noise + Int(progress * 0.0)) }
+            .sorted { $0.id < $1.id }
+            .map { BeaconReading(id: $0.id, rssi: $0.rssi, ts: now) }
+    }
+
+    private func blendedReadings(
+        fromNode: String,
+        toNode: String,
+        progress: Double,
+        now: Date
+    ) -> [BeaconReading] {
+        guard
+            let fromRSSI = fingerprintByLabel[fromNode],
+            let toRSSI = fingerprintByLabel[toNode]
+        else {
+            return readings(at: fromNode, progress: progress, now: now)
+        }
+
+        let beaconIds = Set(fromRSSI.keys).union(toRSSI.keys)
+        let clamped = min(max(progress, 0), 1)
+        let noise = (t % 3) - 1
+
+        return beaconIds
+            .map { id -> BeaconReading in
+                let start = Double(fromRSSI[id] ?? -90)
+                let end = Double(toRSSI[id] ?? -90)
+                let blended = Int((start + (end - start) * clamped).rounded()) + noise
+                return BeaconReading(id: id, rssi: blended, ts: now)
+            }
+            .sorted { $0.id < $1.id }
     }
 }

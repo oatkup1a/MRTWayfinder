@@ -32,6 +32,10 @@ final class BeaconDriver: ObservableObject {
         realConfigured = true
     }
 
+    func configureMockJourney(startId: String, goalId: String) {
+        mock.configureJourney(startId: startId, goalId: goalId)
+    }
+
     func setMode(_ newMode: Mode, startIfRunning: Bool) {
         // stop both to avoid double streams
         mock.stop()

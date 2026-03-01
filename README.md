@@ -48,6 +48,15 @@ This project focuses on **accessibility, robustness, and real-world deployabilit
 - ✅ Real beacon integration ready
 - 🔬 Actively extending and refining (research prototype)
 
+## 📦 Sample Station Data Packs
+
+The repository now includes sample station data packs under `NavMRT/Data/`:
+- `samyan/`
+- `silom/`
+- `lumphini/`
+
+Samyan keeps the runtime filenames (`beacons.json`, `fingerprints.json`, `graph.json`, `places.json`). Additional sample packs use station-prefixed filenames (for example `silom_beacons.json`, `lumphini_graph.json`) plus station metadata files (`silom.json`, `lumphini.json`) to avoid Xcode resource name collisions.
+
 ## 🔮 Future Work
 
 - Floor-specific beacon filtering

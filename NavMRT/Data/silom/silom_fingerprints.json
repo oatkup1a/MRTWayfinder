@@ -6,8 +6,8 @@
       "floor": "B2"
     },
     "rssi": {
-      "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE:1:1": -60,
-      "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE:1:2": -75
+      "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE:2:1": -60,
+      "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE:2:2": -75
     },
     "label": "N1"
   },
@@ -18,8 +18,8 @@
       "floor": "B2"
     },
     "rssi": {
-      "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE:1:1": -70,
-      "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE:1:2": -70
+      "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE:2:1": -70,
+      "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE:2:2": -70
     },
     "label": "N2"
   },
@@ -30,8 +30,8 @@
       "floor": "B2"
     },
     "rssi": {
-      "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE:1:1": -80,
-      "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE:1:2": -65
+      "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE:2:1": -80,
+      "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE:2:2": -65
     },
     "label": "E1"
   }

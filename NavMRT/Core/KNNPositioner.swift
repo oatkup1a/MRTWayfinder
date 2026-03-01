@@ -41,9 +41,26 @@ struct KNNPositioner {
         guard let first = validScored.first else { return nil }
         let top = Array(validScored.prefix(max(1, k)))
 
-        let c = Double(top.count)
-        let x = top.reduce(0.0) { $0 + $1.fp.loc.x } / c
-        let y = top.reduce(0.0) { $0 + $1.fp.loc.y } / c
+        // Distance-weighted centroid so position can move smoothly even when k > 1.
+        // Closer fingerprints contribute more than farther ones.
+        let epsilon = 1e-6
+        let weighted = top.map { item -> (fp: Fingerprint, weight: Double) in
+            let w = 1.0 / (item.d + epsilon)
+            return (item.fp, w)
+        }
+        let weightSum = weighted.reduce(0.0) { $0 + $1.weight }
+
+        let x: Double
+        let y: Double
+        if weightSum > 0 {
+            x = weighted.reduce(0.0) { $0 + $1.fp.loc.x * $1.weight } / weightSum
+            y = weighted.reduce(0.0) { $0 + $1.fp.loc.y * $1.weight } / weightSum
+        } else {
+            // Fallback to simple mean if distances are degenerate.
+            let c = Double(top.count)
+            x = top.reduce(0.0) { $0 + $1.fp.loc.x } / c
+            y = top.reduce(0.0) { $0 + $1.fp.loc.y } / c
+        }
 
         let floor =
             Dictionary(grouping: top, by: { $0.fp.loc.floor })
