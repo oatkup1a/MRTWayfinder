@@ -1,0 +1,77 @@
+{
+  "nodes": [
+    {
+      "id": "H1",
+      "x": 1.0,
+      "y": 0.5,
+      "floor": "G",
+      "type": "test_point"
+    },
+    {
+      "id": "H2",
+      "x": 2.5,
+      "y": 0.5,
+      "floor": "G",
+      "type": "test_point"
+    },
+    {
+      "id": "H3",
+      "x": 3.5,
+      "y": 0.5,
+      "floor": "G",
+      "type": "test_point"
+    },
+    {
+      "id": "H4",
+      "x": 4.5,
+      "y": 0.5,
+      "floor": "G",
+      "type": "test_point"
+    },
+    {
+      "id": "H5",
+      "x": 6.0,
+      "y": 0.5,
+      "floor": "G",
+      "type": "test_point"
+    }
+  ],
+  "edges": [
+    {
+      "from": "H1",
+      "to": "H2",
+      "len": 1.5,
+      "attrs": {
+        "tactile": true,
+        "stairs": false
+      }
+    },
+    {
+      "from": "H2",
+      "to": "H3",
+      "len": 1.0,
+      "attrs": {
+        "tactile": true,
+        "stairs": false
+      }
+    },
+    {
+      "from": "H3",
+      "to": "H4",
+      "len": 1.0,
+      "attrs": {
+        "tactile": true,
+        "stairs": false
+      }
+    },
+    {
+      "from": "H4",
+      "to": "H5",
+      "len": 1.5,
+      "attrs": {
+        "tactile": true,
+        "stairs": false
+      }
+    }
+  ]
+}

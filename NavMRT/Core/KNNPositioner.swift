@@ -17,7 +17,7 @@ struct KNNPositioner {
             let common = Set(a.keys).intersection(b.keys)
             let overlap = common.count
             guard overlap >= 2 else { return (1e9, overlap) }  // require overlap
-            let d = common.reduce(0.0) { s, key in
+            let commonDistance = common.reduce(0.0) { s, key in
                 assert(
                     a[key] != nil && b[key] != nil,
                     "Keys in `common` must exist in both dictionaries"
@@ -27,7 +27,15 @@ struct KNNPositioner {
                 let diff = va - vb
                 return s + diff * diff
             }
-            return (d, overlap)
+
+            // Penalize fingerprints that expect beacons we do not currently see,
+            // and fingerprints that fail to explain currently visible beacons.
+            let missingFromCurrent = Set(b.keys).subtracting(a.keys)
+            let extraInCurrent = Set(a.keys).subtracting(b.keys)
+            let missingPenalty = Double(missingFromCurrent.count) * 225.0
+            let extraPenalty = Double(extraInCurrent.count) * 100.0
+
+            return (commonDistance + missingPenalty + extraPenalty, overlap)
         }
 
         let scored = dataset.map {
@@ -41,9 +49,26 @@ struct KNNPositioner {
         guard let first = validScored.first else { return nil }
         let top = Array(validScored.prefix(max(1, k)))
 
-        let c = Double(top.count)
-        let x = top.reduce(0.0) { $0 + $1.fp.loc.x } / c
-        let y = top.reduce(0.0) { $0 + $1.fp.loc.y } / c
+        // Distance-weighted centroid so position can move smoothly even when k > 1.
+        // Closer fingerprints contribute more than farther ones.
+        let epsilon = 1e-6
+        let weighted = top.map { item -> (fp: Fingerprint, weight: Double) in
+            let w = 1.0 / (item.d + epsilon)
+            return (item.fp, w)
+        }
+        let weightSum = weighted.reduce(0.0) { $0 + $1.weight }
+
+        let x: Double
+        let y: Double
+        if weightSum > 0 {
+            x = weighted.reduce(0.0) { $0 + $1.fp.loc.x * $1.weight } / weightSum
+            y = weighted.reduce(0.0) { $0 + $1.fp.loc.y * $1.weight } / weightSum
+        } else {
+            // Fallback to simple mean if distances are degenerate.
+            let c = Double(top.count)
+            x = top.reduce(0.0) { $0 + $1.fp.loc.x } / c
+            y = top.reduce(0.0) { $0 + $1.fp.loc.y } / c
+        }
 
         let floor =
             Dictionary(grouping: top, by: { $0.fp.loc.floor })

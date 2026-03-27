@@ -2,8 +2,10 @@
   "station": "MRT_SAMYAN",
   "floor": "B2",
   "beacons": [
-    { "id": "b01", "uuid": "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE", "major": 1, "minor": 1, "txPower": -59, "x": 12.4, "y": 5.8, "z": -2, "area": "concourse" },
-    { "id": "b02", "uuid": "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE", "major": 1, "minor": 2, "txPower": -59, "x": 20.1, "y": 7.2, "z": -2, "area": "concourse" }
+    { "id": "A01", "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825", "major": 1, "minor": 1, "txPower": -59, "x": 2.0, "y": 1.5, "z": 0, "area": "corridor_left" },
+    { "id": "A02", "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825", "major": 1, "minor": 2, "txPower": -59, "x": 6.0, "y": -1.5, "z": 0, "area": "corridor_right" },
+    { "id": "A03", "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825", "major": 1, "minor": 3, "txPower": -59, "x": 10.0, "y": 1.5, "z": 0, "area": "corridor_left" },
+    { "id": "A04", "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825", "major": 1, "minor": 4, "txPower": -59, "x": 14.0, "y": -1.5, "z": 0, "area": "corridor_right" },
+    { "id": "A05", "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825", "major": 1, "minor": 5, "txPower": -59, "x": 18.0, "y": 1.5, "z": 0, "area": "corridor_left" }
   ]
 }
-

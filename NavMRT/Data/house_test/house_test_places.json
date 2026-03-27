@@ -1,0 +1,32 @@
+{
+  "H1": {
+    "name": "H1: Left Test Point",
+    "category": "test_point",
+    "startAllowed": true,
+    "destAllowed": false
+  },
+  "H2": {
+    "name": "H2: Left Center",
+    "category": "test_point",
+    "startAllowed": false,
+    "destAllowed": false
+  },
+  "H3": {
+    "name": "H3: Middle",
+    "category": "test_point",
+    "startAllowed": false,
+    "destAllowed": false
+  },
+  "H4": {
+    "name": "H4: Right Center",
+    "category": "test_point",
+    "startAllowed": false,
+    "destAllowed": false
+  },
+  "H5": {
+    "name": "H5: Right Test Point",
+    "category": "test_point",
+    "startAllowed": false,
+    "destAllowed": true
+  }
+}

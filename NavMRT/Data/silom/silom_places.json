@@ -1,18 +1,18 @@
 {
   "N1": {
-    "name": "N1: Start Point",
+    "name": "Silom concourse tactile junction",
     "category": "junction",
     "startAllowed": true,
     "destAllowed": false
   },
   "N2": {
-    "name": "N2: Mid Corridor",
+    "name": "Silom hallway corner junction",
     "category": "junction",
     "startAllowed": false,
     "destAllowed": false
   },
   "E1": {
-    "name": "E1: End Point",
+    "name": "Silom elevator (to platforms)",
     "category": "elevator",
     "startAllowed": true,
     "destAllowed": true

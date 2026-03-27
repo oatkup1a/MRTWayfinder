@@ -1,0 +1,28 @@
+{
+  "station": "MRT_LUMPHINI",
+  "floor": "B2",
+  "beacons": [
+    {
+      "id": "b01",
+      "uuid": "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE",
+      "major": 3,
+      "minor": 1,
+      "txPower": -59,
+      "x": 12.4,
+      "y": 5.8,
+      "z": -2,
+      "area": "concourse"
+    },
+    {
+      "id": "b02",
+      "uuid": "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE",
+      "major": 3,
+      "minor": 2,
+      "txPower": -59,
+      "x": 20.1,
+      "y": 7.2,
+      "z": -2,
+      "area": "concourse"
+    }
+  ]
+}

@@ -4,6 +4,10 @@ import SwiftUI
 struct NavigatorView: View {
     let startId: String
     let goalId: String
+    let startDisplayName: String?
+    let goalDisplayName: String?
+    let routeStartSelectionId: String?
+    let routeGoalSelectionId: String?
 
     let places = DataStore.shared.places
     let routeStore = RouteStore.shared
@@ -78,6 +82,10 @@ struct NavigatorView: View {
     let arrivalThreshold: Double = 1.5
     @State private var posText = "—"
     @State private var instructionText = "Press Start to begin navigation"
+    @State private var journeyPlan: StationJourneyPlan?
+    @State private var mockJourneyTimer: Timer?
+    @State private var mockJourneyStepIndex: Int = 0
+    @State private var mockJourneyScript: [String] = []
     @State private var lastAnnounce = Date.distantPast
     @State private var arrived = false
 
@@ -147,6 +155,7 @@ struct NavigatorView: View {
                     speak("Navigation started")
                     instructionText =
                         "Navigation started. Follow the audio instructions."
+                    startMockJourneyNarrationIfNeeded()
                 } label: {
                     Text("Start navigation")
                         .frame(maxWidth: .infinity)
@@ -165,6 +174,7 @@ struct NavigatorView: View {
                     isRunning = false
                     speak("Navigation stopped")
                     instructionText = "Navigation stopped."
+                    self.stopMockJourneyNarration()
                 } label: {
                     Text("Stop")
                         .frame(maxWidth: .infinity)
@@ -186,30 +196,12 @@ struct NavigatorView: View {
                     "Repeats the last spoken navigation instruction"
                 )
             }
-            Toggle(isOn: $useMockBeacons) {
-                Text(
-                    useMockBeacons
-                        ? "Using Mock Beacons"
-                        : "Using Real Beacons"
-                )
-            }
-            .padding(.top, 8)
-            .accessibilityHidden(true)
-            .onChange(of: useMockBeacons) { _, newValue in
-                let wasRunning = isRunning
-                driver.setMode(
-                    newValue ? .mock : .real,
-                    startIfRunning: wasRunning
-                )
-                resetBuffer()
-                resetNavigationState()
-            }
-
             Spacer()
         }
         .padding()
         .onAppear {
             driver.configureReal(registry: DataStore.shared.beacons)
+            driver.configureMockJourney(startId: startId, goalId: goalId)
             driver.setMode(
                 useMockBeacons ? .mock : .real,
                 startIfRunning: false
@@ -224,8 +216,18 @@ struct NavigatorView: View {
             currentSegmentIndex = 0
 
             if !p.isEmpty {
+                journeyPlan = StationJourneyPlanner.buildPlan(
+                    startId: startId,
+                    startName: placeName(startId),
+                    destinationId: goalId,
+                    destinationName: placeName(goalId)
+                )
+
                 routeStore.recordRecent(
-                    RoutePair(startId: startId, goalId: goalId)
+                    RoutePair(
+                        startId: routeStartSelectionId ?? startId,
+                        goalId: routeGoalSelectionId ?? goalId
+                    )
                 )
 
                 print("Routing path: \(p.map { $0.id })")
@@ -241,10 +243,12 @@ struct NavigatorView: View {
                     resetNavigationState()
                     isRunning = true
                     speak("Navigation started")
-                    instructionText =
-                        "Navigation started. Follow the audio instructions."
+                    instructionText = journeyPlan?.steps.first
+                        ?? "Navigation started. Follow the audio instructions."
+                    startMockJourneyNarrationIfNeeded()
                 } else {
-                    instructionText = "Ready. Press Start when you are ready."
+                    instructionText = journeyPlan?.steps.first
+                        ?? "Ready. Press Start when you are ready."
                 }
 
                 // VoiceOver-first announcement
@@ -265,6 +269,7 @@ struct NavigatorView: View {
         .onDisappear {
             print("NavigatorView disappeared – stop mock")
             driver.stop()
+            stopMockJourneyNarration()
             resetBuffer()
             resetNavigationState()
             isRunning = false
@@ -297,21 +302,74 @@ struct NavigatorView: View {
         }
     }
 
+    private func startMockJourneyNarrationIfNeeded() {
+        stopMockJourneyNarration()
+        guard useMockBeacons else { return }
+
+        let from = placeName(startId)
+        let to = placeName(goalId)
+        mockJourneyScript = StationJourneyPlanner.mockedDetailedJourneySteps(
+            startName: from,
+            destinationName: to
+        )
+        mockJourneyStepIndex = 0
+
+        guard !mockJourneyScript.isEmpty else { return }
+
+        instructionText = mockJourneyScript[0]
+        speak(mockJourneyScript[0])
+
+        mockJourneyTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { _ in
+            guard self.isRunning else { return }
+            let nextIndex = self.mockJourneyStepIndex + 1
+            if nextIndex >= self.mockJourneyScript.count {
+                self.stopMockJourneyNarration()
+                return
+            }
+
+            self.mockJourneyStepIndex = nextIndex
+            let next = self.mockJourneyScript[nextIndex]
+            self.instructionText = next
+            self.speak(next)
+            Haptics.tick()
+        }
+    }
+
+    private func stopMockJourneyNarration() {
+        mockJourneyTimer?.invalidate()
+        mockJourneyTimer = nil
+        mockJourneyStepIndex = 0
+        mockJourneyScript = []
+    }
+
     private func placeName(_ id: String) -> String {
-        places[id]?.name ?? id
+        if id == startId, let startDisplayName { return startDisplayName }
+        if id == goalId, let goalDisplayName { return goalDisplayName }
+        return places[id]?.name ?? id
     }
 
     private func speakRouteSummary() {
         let from = placeName(startId)
         let to = placeName(goalId)
+        let plan = StationJourneyPlanner.buildPlan(
+            startId: startId,
+            startName: from,
+            destinationId: goalId,
+            destinationName: to
+        )
+        journeyPlan = plan
 
         let summary: String
         if autoStartNav {
             summary =
-                "Guided navigation. From \(from) to \(to). Navigation will start automatically."
+                "Guided navigation from \(from) to \(to). "
+                + plan.steps.joined(separator: " ")
+                + " Navigation will start automatically."
         } else {
             summary =
-                "Guided navigation. From \(from) to \(to). Double tap Start to begin."
+                "Guided navigation from \(from) to \(to). "
+                + plan.steps.joined(separator: " ")
+                + " Double tap Start to begin."
         }
 
         instructionText = summary

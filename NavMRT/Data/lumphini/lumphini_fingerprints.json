@@ -1,0 +1,38 @@
+[
+  {
+    "loc": {
+      "x": 10.0,
+      "y": 0.0,
+      "floor": "B2"
+    },
+    "rssi": {
+      "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE:3:1": -60,
+      "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE:3:2": -75
+    },
+    "label": "N1"
+  },
+  {
+    "loc": {
+      "x": 20.0,
+      "y": 0.0,
+      "floor": "B2"
+    },
+    "rssi": {
+      "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE:3:1": -70,
+      "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE:3:2": -70
+    },
+    "label": "N2"
+  },
+  {
+    "loc": {
+      "x": 20.0,
+      "y": 10.0,
+      "floor": "B2"
+    },
+    "rssi": {
+      "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE:3:1": -80,
+      "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE:3:2": -65
+    },
+    "label": "E1"
+  }
+]

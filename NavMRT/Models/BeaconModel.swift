@@ -15,3 +15,9 @@ struct Beacon: Decodable, Hashable {
   let z: Double?
   let area: String?
 }
+
+extension Beacon {
+  var compositeId: String {
+    "\(uuid.uppercased()):\(major):\(minor)"
+  }
+}
