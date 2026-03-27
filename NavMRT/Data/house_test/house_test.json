@@ -1,0 +1,39 @@
+{
+  "station": "HOUSE_TEST",
+  "floor": "G",
+  "beacons": [
+    {
+      "id": "A02",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 2,
+      "txPower": -59,
+      "x": 0.5,
+      "y": 0.0,
+      "z": 0,
+      "area": "left_end"
+    },
+    {
+      "id": "A03",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 3,
+      "txPower": -59,
+      "x": 3.5,
+      "y": 1.5,
+      "z": 0,
+      "area": "middle_offset"
+    },
+    {
+      "id": "A04",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 4,
+      "txPower": -59,
+      "x": 6.5,
+      "y": 0.0,
+      "z": 0,
+      "area": "right_end"
+    }
+  ]
+}

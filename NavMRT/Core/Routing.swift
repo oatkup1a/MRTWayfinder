@@ -202,7 +202,7 @@ struct StationJourneyPlanner {
     }
 
     static func mockedInStationPath(for routeKey: String) -> [String] {
-        mockRouteGuide[routeKey]?.inStationPath ?? ["N1", "N2", "E1"]
+        mockRoute(for: routeKey)?.inStationPath ?? ["N1", "N2", "E1"]
     }
 
     static func mockedDetailedJourneySteps(startName: String, destinationName: String) -> [String] {
@@ -220,11 +220,28 @@ struct StationJourneyPlanner {
     }
 
     private static func mockedStopCount(startId: String, destinationId: String) -> Int {
-        if let guide = mockRouteGuide["\(startId)->\(destinationId)"] {
+        if let guide = mockRoute(for: "\(startId)->\(destinationId)") {
             return guide.stopCount
         }
         let checksum = stableChecksum("\(startId)->\(destinationId)")
         return max(1, (checksum % 6) + 1)
+    }
+
+    private static func mockRoute(for routeKey: String) -> MockRouteGuide? {
+        if let guide = mockRouteGuide[routeKey] {
+            return guide
+        }
+
+        let parts = routeKey.split(separator: "->", omittingEmptySubsequences: false)
+        guard parts.count == 2 else { return nil }
+
+        let reverseKey = "\(parts[1])->\(parts[0])"
+        guard let reverseGuide = mockRouteGuide[reverseKey] else { return nil }
+
+        return MockRouteGuide(
+            stopCount: reverseGuide.stopCount,
+            inStationPath: Array(reverseGuide.inStationPath.reversed())
+        )
     }
 
     private static func fallbackPlatformSide(from start: String, to destination: String) -> String {

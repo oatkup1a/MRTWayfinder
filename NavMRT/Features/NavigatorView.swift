@@ -196,26 +196,6 @@ struct NavigatorView: View {
                     "Repeats the last spoken navigation instruction"
                 )
             }
-            Toggle(isOn: $useMockBeacons) {
-                Text(
-                    useMockBeacons
-                        ? "Using Mock Beacons"
-                        : "Using Real Beacons"
-                )
-            }
-            .padding(.top, 8)
-            .accessibilityHidden(true)
-            .onChange(of: useMockBeacons) { _, newValue in
-                let wasRunning = isRunning
-                driver.configureMockJourney(startId: startId, goalId: goalId)
-                driver.setMode(
-                    newValue ? .mock : .real,
-                    startIfRunning: wasRunning
-                )
-                resetBuffer()
-                resetNavigationState()
-            }
-
             Spacer()
         }
         .padding()

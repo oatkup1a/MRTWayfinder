@@ -2,22 +2,22 @@
   "nodes": [
     {
       "id": "N1",
-      "x": 10.0,
+      "x": 0.0,
       "y": 0.0,
       "floor": "B2",
       "type": "tactile_junction"
     },
     {
       "id": "N2",
-      "x": 20.0,
+      "x": 6.0,
       "y": 0.0,
       "floor": "B2",
       "type": "tactile_junction"
     },
     {
       "id": "E1",
-      "x": 20.0,
-      "y": 10.0,
+      "x": 12.0,
+      "y": 0.0,
       "floor": "B2",
       "type": "elevator_entrance"
     }
@@ -26,7 +26,7 @@
     {
       "from": "N1",
       "to": "N2",
-      "len": 10.0,
+      "len": 6.0,
       "attrs": {
         "tactile": true,
         "stairs": false
@@ -35,7 +35,7 @@
     {
       "from": "N2",
       "to": "E1",
-      "len": 10.0,
+      "len": 6.0,
       "attrs": {
         "tactile": true,
         "stairs": false

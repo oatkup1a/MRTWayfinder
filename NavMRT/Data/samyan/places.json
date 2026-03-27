@@ -1,18 +1,18 @@
 {
   "N1": {
-    "name": "Concourse tactile junction",
+    "name": "N1: Start Point",
     "category": "junction",
     "startAllowed": true,
     "destAllowed": false
   },
   "N2": {
-    "name": "Hallway corner junction",
+    "name": "N2: Mid Corridor",
     "category": "junction",
     "startAllowed": false,
     "destAllowed": false
   },
   "E1": {
-    "name": "Elevator (to platforms)",
+    "name": "E1: End Point",
     "category": "elevator",
     "startAllowed": true,
     "destAllowed": true

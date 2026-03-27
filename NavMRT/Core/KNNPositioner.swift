@@ -17,7 +17,7 @@ struct KNNPositioner {
             let common = Set(a.keys).intersection(b.keys)
             let overlap = common.count
             guard overlap >= 2 else { return (1e9, overlap) }  // require overlap
-            let d = common.reduce(0.0) { s, key in
+            let commonDistance = common.reduce(0.0) { s, key in
                 assert(
                     a[key] != nil && b[key] != nil,
                     "Keys in `common` must exist in both dictionaries"
@@ -27,7 +27,15 @@ struct KNNPositioner {
                 let diff = va - vb
                 return s + diff * diff
             }
-            return (d, overlap)
+
+            // Penalize fingerprints that expect beacons we do not currently see,
+            // and fingerprints that fail to explain currently visible beacons.
+            let missingFromCurrent = Set(b.keys).subtracting(a.keys)
+            let extraInCurrent = Set(a.keys).subtracting(b.keys)
+            let missingPenalty = Double(missingFromCurrent.count) * 225.0
+            let extraPenalty = Double(extraInCurrent.count) * 100.0
+
+            return (commonDistance + missingPenalty + extraPenalty, overlap)
         }
 
         let scored = dataset.map {

@@ -58,7 +58,10 @@ struct RSSIConsoleView: View {
         if useMockBeacons {
             mockBM.start()
         } else {
-            realBM.configure(beacons: DataStore.shared.beacons)
+            realBM.configure(
+                beacons: DataStore.shared.beacons,
+                includeUnregisteredBeacons: true
+            )
             print("Starting REAL beacons with \(DataStore.shared.beacons.beacons.count) constraints")
             realBM.start()
         }
@@ -79,6 +82,12 @@ struct RSSIConsoleView: View {
     @State private var sorted: [BeaconStats] = []
     @State private var bestOverlap: Int = 0
     @State private var readingCount: Int = 0
+    @State private var knnFix: PositionFix?
+    @State private var trilaterationFix: PositionFix?
+    @State private var selectedReferenceLabel: String =
+        DataStore.shared.fingerprints.first?.label ?? ""
+
+    private let places = DataStore.shared.places
 
     @State private var lastOverlapUpdate = Date.distantPast
     private let overlapEvery: TimeInterval = 0.5
@@ -98,10 +107,49 @@ struct RSSIConsoleView: View {
             }
 
             Section("Quality") {
+                if !useMockBeacons {
+                    Text("Scanner: \(realBM.statusText)")
+                }
                 Text("Readings: \(readingCount)")
                 Text("Best overlap with fingerprints: \(bestOverlap)")
                 Text(bestOverlap >= 2 ? "Localizable: YES" : "Localizable: NO")
                     .fontWeight(.semibold)
+            }
+
+            Section("Localization Test") {
+                Picker("Reference point", selection: $selectedReferenceLabel) {
+                    ForEach(referenceLabels, id: \.self) { label in
+                        Text(referenceDisplayLabel(for: label)).tag(label)
+                    }
+                }
+                .pickerStyle(.navigationLink)
+
+                if let reference = referenceFingerprint {
+                    Text(
+                        String(
+                            format: "Ground truth: (%.1f, %.1f, %@)",
+                            reference.loc.x,
+                            reference.loc.y,
+                            reference.loc.floor
+                        )
+                    )
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    Text(referenceDisplayLabel(for: selectedReferenceLabel))
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+
+                localizationRow(
+                    title: "KNN Fingerprinting",
+                    fix: knnFix,
+                    reference: referenceFingerprint
+                )
+                localizationRow(
+                    title: "Trilateration",
+                    fix: trilaterationFix,
+                    reference: referenceFingerprint
+                )
             }
 
             Section("Signals") {
@@ -174,6 +222,8 @@ struct RSSIConsoleView: View {
             sorted.removeAll()
             bestOverlap = 0
             readingCount = 0
+            knnFix = nil
+            trilaterationFix = nil
             startActive()
         }
 
@@ -186,6 +236,20 @@ struct RSSIConsoleView: View {
             // after ingest+prune (not one tick behind)
             readingCount =
                 buffer.medianVector(minSamples: 1, maxAge: 5.0, now: now).count
+            let localizationVector = buffer.medianVector(
+                minSamples: 3,
+                maxAge: 1.5,
+                now: now
+            )
+            knnFix = KNNPositioner.estimate(
+                current: localizationVector,
+                dataset: DataStore.shared.fingerprints,
+                k: 3
+            )
+            trilaterationFix = TrilaterationPositioner.estimate(
+                current: localizationVector,
+                registry: DataStore.shared.beacons
+            )
 
             // strongest first by median
             sorted = buffer.allStatsSorted { $0.median > $1.median }
@@ -196,8 +260,7 @@ struct RSSIConsoleView: View {
 
                 let fps = DataStore.shared.fingerprints
                 let currentKeys = Set(
-                    buffer.medianVector(minSamples: 3, maxAge: 1.5, now: now)
-                        .keys
+                    localizationVector.keys
                 )
 
                 bestOverlap =
@@ -206,5 +269,88 @@ struct RSSIConsoleView: View {
                     }.max() ?? 0
             }
         }
+    }
+
+    private var referenceLabels: [String] {
+        DataStore.shared.fingerprints.compactMap(\.label)
+    }
+
+    private var referenceFingerprint: Fingerprint? {
+        DataStore.shared.fingerprints.first {
+            $0.label == selectedReferenceLabel
+        }
+    }
+
+    @ViewBuilder
+    private func localizationRow(
+        title: String,
+        fix: PositionFix?,
+        reference: Fingerprint?
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.headline)
+
+            if let fix {
+                if let z = fix.z {
+                    Text(
+                        String(
+                            format: "(%.1f, %.1f, %.1f, %@)  conf=%.2f  anchors=%d",
+                            fix.x,
+                            fix.y,
+                            z,
+                            fix.floor,
+                            fix.confidence,
+                            fix.overlap
+                        )
+                    )
+                    .font(.system(.footnote, design: .monospaced))
+                } else {
+                    Text(
+                        String(
+                            format: "(%.1f, %.1f, %@)  conf=%.2f  anchors=%d",
+                            fix.x,
+                            fix.y,
+                            fix.floor,
+                            fix.confidence,
+                            fix.overlap
+                        )
+                    )
+                    .font(.system(.footnote, design: .monospaced))
+                }
+
+                if let error = localizationError(fix: fix, reference: reference) {
+                    Text(String(format: "Error: %.2f m", error))
+                        .font(.footnote)
+                        .foregroundStyle(error <= 2.0 ? .green : .orange)
+                } else {
+                    Text("Error: unavailable")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+            } else {
+                Text("No estimate yet")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    private func localizationError(
+        fix: PositionFix,
+        reference: Fingerprint?
+    ) -> Double? {
+        guard let reference else { return nil }
+        guard fix.floor == reference.loc.floor else { return nil }
+        let dx = fix.x - reference.loc.x
+        let dy = fix.y - reference.loc.y
+        return sqrt(dx * dx + dy * dy)
+    }
+
+    private func referenceDisplayLabel(for label: String) -> String {
+        if let name = places[label]?.name {
+            return name
+        }
+        return label
     }
 }

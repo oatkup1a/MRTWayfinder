@@ -1,28 +1,10 @@
 import SwiftUI
 
 struct RouteSelectionView: View {
-    struct StationOption: Identifiable {
-        let id: String
-        let name: String
-        let anchorNodeId: String
-    }
-
     @StateObject private var store = RouteStore.shared
 
     @State private var startId: String = ""
     @State private var goalId: String = ""
-
-    private let stations: [StationOption] = [
-        StationOption(id: "SAMYAN", name: "Sam Yan", anchorNodeId: "N1"),
-        StationOption(id: "SILOM", name: "Si Lom", anchorNodeId: "N2"),
-        StationOption(id: "LUMPHINI", name: "Lumphini", anchorNodeId: "E1")
-    ]
-
-    private let legacyNodeToStationId: [String: String] = [
-        "N1": "SAMYAN",
-        "N2": "SILOM",
-        "E1": "LUMPHINI"
-    ]
 
     private var currentRoute: RoutePair {
         RoutePair(startId: startId, goalId: goalId)
@@ -32,13 +14,15 @@ struct RouteSelectionView: View {
         !startId.isEmpty && !goalId.isEmpty && startId != goalId
     }
 
+    private let stations = StationCatalog.stations
+
     var body: some View {
         Form {
             if !store.favorites.isEmpty {
                 Section("Favorites") {
                     ForEach(store.favorites) { r in
                         NavigationLink {
-                            navigatorView(for: r)
+                            StationRouteDestinationView(route: r)
                         } label: {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(routeTitle(r))
@@ -55,7 +39,7 @@ struct RouteSelectionView: View {
                 Section {
                     ForEach(store.recents) { r in
                         NavigationLink {
-                            navigatorView(for: r)
+                            StationRouteDestinationView(route: r)
                         } label: {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(routeTitle(r))
@@ -80,7 +64,7 @@ struct RouteSelectionView: View {
                 Picker("Start station", selection: $startId) {
                     Text("Select start station").tag("")
                     ForEach(stations) { station in
-                        Text(station.name).tag(station.id)
+                        Text(station.displayLabel).tag(station.id)
                     }
                 }
                 .pickerStyle(.navigationLink)
@@ -90,7 +74,7 @@ struct RouteSelectionView: View {
                 Picker("Destination station", selection: $goalId) {
                     Text("Select destination station").tag("")
                     ForEach(stations) { station in
-                        Text(station.name).tag(station.id)
+                        Text(station.displayLabel).tag(station.id)
                     }
                 }
                 .pickerStyle(.navigationLink)
@@ -98,7 +82,7 @@ struct RouteSelectionView: View {
 
             Section {
                 NavigationLink {
-                    navigatorView(for: currentRoute)
+                    StationRouteDestinationView(route: currentRoute)
                 } label: {
                     Text("Start guided navigation")
                         .frame(maxWidth: .infinity, alignment: .center)
@@ -115,7 +99,7 @@ struct RouteSelectionView: View {
                 .disabled(!canStart)
             }
         }
-        .navigationTitle("Route Selection")
+        .navigationTitle("Manual Selection")
         .onAppear {
             if startId.isEmpty { startId = stations.first?.id ?? "" }
             if goalId.isEmpty { goalId = stations.dropFirst().first?.id ?? "" }
@@ -140,37 +124,18 @@ struct RouteSelectionView: View {
     }
 
     private func canonicalStationId(_ id: String) -> String {
-        legacyNodeToStationId[id] ?? id
+        StationCatalog.canonicalStationId(id)
     }
 
     private func station(by id: String) -> StationOption? {
-        let normalized = canonicalStationId(id)
-        return stations.first(where: { $0.id == normalized })
+        StationCatalog.station(by: canonicalStationId(id))
     }
 
     private func stationName(_ id: String) -> String {
-        station(by: id)?.name ?? id
+        station(by: id)?.displayLabel ?? id
     }
 
     private func routeTitle(_ r: RoutePair) -> String {
         "\(stationName(r.startId)) → \(stationName(r.goalId))"
-    }
-
-    @ViewBuilder
-    private func navigatorView(for route: RoutePair) -> some View {
-        let normalizedStartId = canonicalStationId(route.startId)
-        let normalizedGoalId = canonicalStationId(route.goalId)
-
-        let startStation = station(by: normalizedStartId) ?? stations[0]
-        let goalStation = station(by: normalizedGoalId) ?? stations[1]
-
-        NavigatorView(
-            startId: startStation.anchorNodeId,
-            goalId: goalStation.anchorNodeId,
-            startDisplayName: startStation.name,
-            goalDisplayName: goalStation.name,
-            routeStartSelectionId: normalizedStartId,
-            routeGoalSelectionId: normalizedGoalId
-        )
     }
 }
