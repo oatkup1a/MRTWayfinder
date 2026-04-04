@@ -1,0 +1,56 @@
+{
+  "center": {
+    "name": "Room Center",
+    "category": "waypoint",
+    "startAllowed": true,
+    "destAllowed": true
+  },
+  "nw_corner": {
+    "name": "Northwest Corner",
+    "category": "waypoint",
+    "startAllowed": true,
+    "destAllowed": true
+  },
+  "ne_corner": {
+    "name": "Northeast Corner",
+    "category": "waypoint",
+    "startAllowed": true,
+    "destAllowed": true
+  },
+  "sw_corner": {
+    "name": "Southwest Corner",
+    "category": "waypoint",
+    "startAllowed": true,
+    "destAllowed": true
+  },
+  "se_corner": {
+    "name": "Southeast Corner",
+    "category": "waypoint",
+    "startAllowed": true,
+    "destAllowed": true
+  },
+  "west_wall": {
+    "name": "West Wall",
+    "category": "waypoint",
+    "startAllowed": true,
+    "destAllowed": true
+  },
+  "east_wall": {
+    "name": "East Wall",
+    "category": "waypoint",
+    "startAllowed": true,
+    "destAllowed": true
+  },
+  "north_wall": {
+    "name": "North Wall",
+    "category": "waypoint",
+    "startAllowed": true,
+    "destAllowed": true
+  },
+  "south_wall": {
+    "name": "South Wall",
+    "category": "waypoint",
+    "startAllowed": true,
+    "destAllowed": true
+  }
+}

@@ -4,6 +4,9 @@ struct DeveloperToolsView: View {
     var body: some View {
         List {
             Section("Diagnostics") {
+                NavigationLink("Visual Position Map") {
+                    VisualPositionView()
+                }
                 NavigationLink("RSSI Console") {
                     RSSIConsoleView()
                 }

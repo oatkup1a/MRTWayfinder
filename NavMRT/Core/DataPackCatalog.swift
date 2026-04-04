@@ -16,6 +16,7 @@ enum DataPackCatalog {
     static let packs: [DataPackOption] = [
         DataPackOption(id: "samyan", name: "Sam Yan"),
         DataPackOption(id: "house_test", name: "House Test"),
+        DataPackOption(id: "square_room", name: "Square Room (3m)"),
         DataPackOption(id: "silom", name: "Si Lom"),
         DataPackOption(id: "lumphini", name: "Lumphini"),
     ]

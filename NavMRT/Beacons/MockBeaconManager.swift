@@ -25,15 +25,32 @@ final class MockBeaconManager: ObservableObject, BeaconSource {
         stationWaitSeconds: 12
     )
 
-    private lazy var fingerprintByLabel: [String: [String: Int]] = {
+    private var fingerprintByLabel: [String: [String: Int]] = [:]
+    
+    private func loadFingerprints() {
         let pairs: [(String, [String: Int])] = DataStore.shared.fingerprints.compactMap { fp in
             guard let label = fp.label else { return nil }
             return (label, fp.rssi)
         }
-        return Dictionary(uniqueKeysWithValues: pairs)
-    }()
+        fingerprintByLabel = Dictionary(uniqueKeysWithValues: pairs)
+        print("MockBeaconManager loaded \(fingerprintByLabel.count) fingerprints")
+    }
+    
+    func setFingerprints(_ fingerprints: [Fingerprint]) {
+        let pairs: [(String, [String: Int])] = fingerprints.compactMap { fp in
+            guard let label = fp.label else { return nil }
+            return (label, fp.rssi)
+        }
+        fingerprintByLabel = Dictionary(uniqueKeysWithValues: pairs)
+        print("MockBeaconManager set \(fingerprintByLabel.count) fingerprints from external source")
+    }
 
     func configureJourney(startId: String, goalId: String) {
+        // Load fingerprints from DataStore if not already set externally
+        if fingerprintByLabel.isEmpty {
+            loadFingerprints()
+        }
+        
         let routeKey = "\(startId)->\(goalId)"
         let path = StationJourneyPlanner.mockedInStationPath(for: routeKey)
         let cleaned = path.filter { fingerprintByLabel[$0] != nil }
@@ -45,11 +62,23 @@ final class MockBeaconManager: ObservableObject, BeaconSource {
                 stationWaitSeconds: 12
             )
         } else {
-            scenario = Scenario(
-                nodeIds: ["N1", "N2", "E1"],
-                secondsPerSegment: 6,
-                stationWaitSeconds: 12
-            )
+            // Fallback: use all available fingerprint labels if route planning fails
+            let allLabels = Array(fingerprintByLabel.keys)
+            if allLabels.count >= 2 {
+                scenario = Scenario(
+                    nodeIds: allLabels,
+                    secondsPerSegment: 3,
+                    stationWaitSeconds: 6
+                )
+                print("MockBeaconManager: Using fallback path with \(allLabels.count) nodes: \(allLabels)")
+            } else {
+                scenario = Scenario(
+                    nodeIds: ["N1", "N2", "E1"],
+                    secondsPerSegment: 6,
+                    stationWaitSeconds: 12
+                )
+                print("MockBeaconManager: Warning - no fingerprints available, using default path")
+            }
         }
 
         t = 0
@@ -63,6 +92,12 @@ final class MockBeaconManager: ObservableObject, BeaconSource {
         }
 
         print("MockBeaconManager.start")
+        
+        // Load fingerprints if not already loaded
+        if fingerprintByLabel.isEmpty {
+            loadFingerprints()
+        }
+        
         isRunning = true
         t = 0
 

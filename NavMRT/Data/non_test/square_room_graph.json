@@ -1,0 +1,229 @@
+{
+  "nodes": [
+    {
+      "id": "center",
+      "x": 1.5,
+      "y": 1.5,
+      "floor": "Ground",
+      "type": "waypoint"
+    },
+    {
+      "id": "nw_corner",
+      "x": 0.5,
+      "y": 2.5,
+      "floor": "Ground",
+      "type": "waypoint"
+    },
+    {
+      "id": "ne_corner",
+      "x": 2.5,
+      "y": 2.5,
+      "floor": "Ground",
+      "type": "waypoint"
+    },
+    {
+      "id": "sw_corner",
+      "x": 0.5,
+      "y": 0.5,
+      "floor": "Ground",
+      "type": "waypoint"
+    },
+    {
+      "id": "se_corner",
+      "x": 2.5,
+      "y": 0.5,
+      "floor": "Ground",
+      "type": "waypoint"
+    },
+    {
+      "id": "west_wall",
+      "x": 0.5,
+      "y": 1.5,
+      "floor": "Ground",
+      "type": "waypoint"
+    },
+    {
+      "id": "east_wall",
+      "x": 2.5,
+      "y": 1.5,
+      "floor": "Ground",
+      "type": "waypoint"
+    },
+    {
+      "id": "north_wall",
+      "x": 1.5,
+      "y": 2.5,
+      "floor": "Ground",
+      "type": "waypoint"
+    },
+    {
+      "id": "south_wall",
+      "x": 1.5,
+      "y": 0.5,
+      "floor": "Ground",
+      "type": "waypoint"
+    }
+  ],
+  "edges": [
+    {
+      "from": "center",
+      "to": "nw_corner",
+      "len": 1.414,
+      "attrs": {
+        "tactile": false,
+        "stairs": false,
+        "elevator": false
+      }
+    },
+    {
+      "from": "center",
+      "to": "ne_corner",
+      "len": 1.414,
+      "attrs": {
+        "tactile": false,
+        "stairs": false,
+        "elevator": false
+      }
+    },
+    {
+      "from": "center",
+      "to": "sw_corner",
+      "len": 1.414,
+      "attrs": {
+        "tactile": false,
+        "stairs": false,
+        "elevator": false
+      }
+    },
+    {
+      "from": "center",
+      "to": "se_corner",
+      "len": 1.414,
+      "attrs": {
+        "tactile": false,
+        "stairs": false,
+        "elevator": false
+      }
+    },
+    {
+      "from": "center",
+      "to": "west_wall",
+      "len": 1.0,
+      "attrs": {
+        "tactile": false,
+        "stairs": false,
+        "elevator": false
+      }
+    },
+    {
+      "from": "center",
+      "to": "east_wall",
+      "len": 1.0,
+      "attrs": {
+        "tactile": false,
+        "stairs": false,
+        "elevator": false
+      }
+    },
+    {
+      "from": "center",
+      "to": "north_wall",
+      "len": 1.0,
+      "attrs": {
+        "tactile": false,
+        "stairs": false,
+        "elevator": false
+      }
+    },
+    {
+      "from": "center",
+      "to": "south_wall",
+      "len": 1.0,
+      "attrs": {
+        "tactile": false,
+        "stairs": false,
+        "elevator": false
+      }
+    },
+    {
+      "from": "nw_corner",
+      "to": "north_wall",
+      "len": 1.0,
+      "attrs": {
+        "tactile": false,
+        "stairs": false,
+        "elevator": false
+      }
+    },
+    {
+      "from": "north_wall",
+      "to": "ne_corner",
+      "len": 1.0,
+      "attrs": {
+        "tactile": false,
+        "stairs": false,
+        "elevator": false
+      }
+    },
+    {
+      "from": "nw_corner",
+      "to": "west_wall",
+      "len": 1.0,
+      "attrs": {
+        "tactile": false,
+        "stairs": false,
+        "elevator": false
+      }
+    },
+    {
+      "from": "west_wall",
+      "to": "sw_corner",
+      "len": 1.0,
+      "attrs": {
+        "tactile": false,
+        "stairs": false,
+        "elevator": false
+      }
+    },
+    {
+      "from": "ne_corner",
+      "to": "east_wall",
+      "len": 1.0,
+      "attrs": {
+        "tactile": false,
+        "stairs": false,
+        "elevator": false
+      }
+    },
+    {
+      "from": "east_wall",
+      "to": "se_corner",
+      "len": 1.0,
+      "attrs": {
+        "tactile": false,
+        "stairs": false,
+        "elevator": false
+      }
+    },
+    {
+      "from": "sw_corner",
+      "to": "south_wall",
+      "len": 1.0,
+      "attrs": {
+        "tactile": false,
+        "stairs": false,
+        "elevator": false
+      }
+    },
+    {
+      "from": "south_wall",
+      "to": "se_corner",
+      "len": 1.0,
+      "attrs": {
+        "tactile": false,
+        "stairs": false,
+        "elevator": false
+      }
+    }
+  ]
+}

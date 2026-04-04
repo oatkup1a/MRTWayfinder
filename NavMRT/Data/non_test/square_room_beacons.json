@@ -1,0 +1,50 @@
+{
+  "station": "Test Room",
+  "floor": "Ground",
+  "beacons": [
+    {
+      "id": "Corner_NW",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 1,
+      "txPower": -59,
+      "x": 0.0,
+      "y": 3.0,
+      "z": 2.0,
+      "area": "Northwest"
+    },
+    {
+      "id": "Corner_NE",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 2,
+      "txPower": -59,
+      "x": 3.0,
+      "y": 3.0,
+      "z": 2.0,
+      "area": "Northeast"
+    },
+    {
+      "id": "Corner_SW",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 3,
+      "txPower": -59,
+      "x": 0.0,
+      "y": 0.0,
+      "z": 2.0,
+      "area": "Southwest"
+    },
+    {
+      "id": "Corner_SE",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 4,
+      "txPower": -59,
+      "x": 3.0,
+      "y": 0.0,
+      "z": 2.0,
+      "area": "Southeast"
+    }
+  ]
+}
