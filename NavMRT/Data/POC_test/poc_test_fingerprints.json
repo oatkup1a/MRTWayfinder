@@ -1,0 +1,179 @@
+[
+  {
+    "label": "A",
+    "loc": {
+      "x": 0.0,
+      "y": 0.5,
+      "floor": "Ground"
+    },
+    "rssi": {
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:1": -55,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:2": -52,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:5": -68,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:10": -78
+    }
+  },
+  {
+    "label": "Mid1",
+    "loc": {
+      "x": 2.0,
+      "y": 0.5,
+      "floor": "Ground"
+    },
+    "rssi": {
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:2": -65,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:5": -50,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:4": -68,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:10": -70
+    }
+  },
+  {
+    "label": "Junction",
+    "loc": {
+      "x": 4.0,
+      "y": 0.5,
+      "floor": "Ground"
+    },
+    "rssi": {
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:3": -58,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:4": -55,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:10": -62,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:5": -68
+    }
+  },
+  {
+    "label": "Mid2",
+    "loc": {
+      "x": 4.5,
+      "y": 3.0,
+      "floor": "Ground"
+    },
+    "rssi": {
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:9": -52,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:8": -65,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:6": -68,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:3": -75
+    }
+  },
+  {
+    "label": "B",
+    "loc": {
+      "x": 5.0,
+      "y": 5.0,
+      "floor": "Ground"
+    },
+    "rssi": {
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:7": -50,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:6": -58,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:8": -72,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:9": -75
+    }
+  },
+  {
+    "label": "Corner_0_0",
+    "loc": {
+      "x": 0.0,
+      "y": 0.0,
+      "floor": "Ground"
+    },
+    "rssi": {
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:2": -48,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:1": -60,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:5": -70
+    }
+  },
+  {
+    "label": "Corner_0_1",
+    "loc": {
+      "x": 0.0,
+      "y": 1.0,
+      "floor": "Ground"
+    },
+    "rssi": {
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:1": -48,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:2": -58,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:5": -68
+    }
+  },
+  {
+    "label": "Corner_4_0",
+    "loc": {
+      "x": 4.0,
+      "y": 0.0,
+      "floor": "Ground"
+    },
+    "rssi": {
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:4": -48,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:10": -55,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:5": -65,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:3": -60
+    }
+  },
+  {
+    "label": "Corner_4_1",
+    "loc": {
+      "x": 4.0,
+      "y": 1.0,
+      "floor": "Ground"
+    },
+    "rssi": {
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:3": -48,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:4": -58,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:10": -62,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:5": -68
+    }
+  },
+  {
+    "label": "Corner_5_0",
+    "loc": {
+      "x": 5.0,
+      "y": 0.0,
+      "floor": "Ground"
+    },
+    "rssi": {
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:10": -48,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:4": -62,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:3": -68
+    }
+  },
+  {
+    "label": "Corner_5_1",
+    "loc": {
+      "x": 5.0,
+      "y": 1.0,
+      "floor": "Ground"
+    },
+    "rssi": {
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:8": -48,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:3": -62,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:10": -58,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:4": -68
+    }
+  },
+  {
+    "label": "Mid_4_5",
+    "loc": {
+      "x": 4.0,
+      "y": 5.0,
+      "floor": "Ground"
+    },
+    "rssi": {
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:6": -48,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:7": -58,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:9": -68
+    }
+  },
+  {
+    "label": "Mid_5_5",
+    "loc": {
+      "x": 5.0,
+      "y": 5.0,
+      "floor": "Ground"
+    },
+    "rssi": {
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:7": -48,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:6": -58,
+      "FDA50693-A4E2-4FB1-AFCF-C6EB07647825:1:8": -68
+    }
+  }
+]

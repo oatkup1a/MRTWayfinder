@@ -3,59 +3,114 @@
   "floor": "Ground",
   "beacons": [
     {
-      "id": "Beacon_Start",
+      "id": "Beacon_A_Left",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 1,
       "txPower": -59,
       "x": 0.0,
-      "y": 0.0,
+      "y": 1.0,
       "z": 2.0,
-      "area": "Point A"
+      "area": "Point A - Left wall"
     },
     {
-      "id": "Beacon_Junction_Left",
+      "id": "Beacon_A_Center",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 2,
       "txPower": -59,
-      "x": 2.25,
+      "x": 0.0,
       "y": 0.0,
       "z": 2.0,
-      "area": "Halfway to junction"
+      "area": "Point A - Center"
     },
     {
-      "id": "Beacon_Junction_Right",
+      "id": "Beacon_A_Right",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 3,
       "txPower": -59,
-      "x": 4.5,
-      "y": 0.0,
+      "x": 4.0,
+      "y": 1.0,
       "z": 2.0,
-      "area": "Junction turn point"
+      "area": "Point A - Right wall"
     },
     {
-      "id": "Beacon_Halfway_B",
+      "id": "Beacon_Corridor1_Mid",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 4,
       "txPower": -59,
-      "x": 4.5,
-      "y": 2.25,
+      "x": 4.0,
+      "y": 0.0,
       "z": 2.0,
-      "area": "Halfway to Point B"
+      "area": "First corridor - Midpoint center"
     },
     {
-      "id": "Beacon_Destination",
+      "id": "Beacon_Junction_Before",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 5,
       "txPower": -59,
-      "x": 4.5,
-      "y": 4.5,
+      "x": 2.0,
+      "y": 0.5,
       "z": 2.0,
-      "area": "Point B"
+      "area": "Approaching junction"
+    },
+    {
+      "id": "Beacon_Junction_Corner",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 6,
+      "txPower": -59,
+      "x": 4.0,
+      "y": 5.0,
+      "z": 2.0,
+      "area": "Junction corner - Turn point"
+    },
+    {
+      "id": "Beacon_Junction_After",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 7,
+      "txPower": -59,
+      "x": 5.0,
+      "y": 5.0,
+      "z": 2.0,
+      "area": "Just after turn"
+    },
+    {
+      "id": "Beacon_Corridor2_Mid",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 8,
+      "txPower": -59,
+      "x": 5.0,
+      "y": 1.0,
+      "z": 2.0,
+      "area": "Second corridor - Midpoint center"
+    },
+    {
+      "id": "Beacon_B_Left",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 9,
+      "txPower": -59,
+      "x": 4.5,
+      "y": 3.0,
+      "z": 2.0,
+      "area": "Point B - Left wall"
+    },
+    {
+      "id": "Beacon_B_Right",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 10,
+      "txPower": -59,
+      "x": 5.0,
+      "y": 0.0,
+      "z": 2.0,
+      "area": "Point B - Right wall"
     }
   ]
 }
