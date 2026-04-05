@@ -1,9 +1,9 @@
 {
-  "station": "Test Room",
+  "station": "POC Test Area",
   "floor": "Ground",
   "beacons": [
     {
-      "id": "Bottom_Left",
+      "id": "Beacon_Start",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 1,
@@ -11,51 +11,51 @@
       "x": 0.0,
       "y": 0.0,
       "z": 2.0,
-      "area": "Southwest"
+      "area": "Point A"
     },
     {
-      "id": "Top_Left",
+      "id": "Beacon_Junction_Left",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 2,
       "txPower": -59,
-      "x": 0.0,
-      "y": 3.0,
+      "x": 2.25,
+      "y": 0.0,
       "z": 2.0,
-      "area": "Northwest"
+      "area": "Halfway to junction"
     },
     {
-      "id": "Center_Middle",
+      "id": "Beacon_Junction_Right",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 3,
       "txPower": -59,
-      "x": 1.5,
-      "y": 1.5,
+      "x": 4.5,
+      "y": 0.0,
       "z": 2.0,
-      "area": "Center"
+      "area": "Junction turn point"
     },
     {
-      "id": "Top_Right",
+      "id": "Beacon_Halfway_B",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 4,
       "txPower": -59,
-      "x": 3.0,
-      "y": 3.0,
+      "x": 4.5,
+      "y": 2.25,
       "z": 2.0,
-      "area": "Northeast"
+      "area": "Halfway to Point B"
     },
     {
-      "id": "Bottom_Right",
+      "id": "Beacon_Destination",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 5,
       "txPower": -59,
-      "x": 3.0,
-      "y": 0.0,
+      "x": 4.5,
+      "y": 4.5,
       "z": 2.0,
-      "area": "Southeast"
+      "area": "Point B"
     }
   ]
 }

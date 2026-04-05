@@ -1,0 +1,79 @@
+{
+  "station": {
+    "id": "poc_test",
+    "name": "POC Test Area",
+    "floors": ["Ground"],
+    "dimensions": {
+      "width": 10,
+      "height": 10
+    }
+  },
+  "nodes": [
+    {
+      "id": "point_a",
+      "name": "Point A - Start",
+      "x": 0.0,
+      "y": 0.0,
+      "floor": "Ground",
+      "type": "start",
+      "accessible": true,
+      "landmark": "Starting point"
+    },
+    {
+      "id": "junction",
+      "name": "Junction - Turn Left Here",
+      "x": 4.5,
+      "y": 0.0,
+      "floor": "Ground",
+      "type": "junction",
+      "accessible": true,
+      "landmark": "Turn point"
+    },
+    {
+      "id": "point_b",
+      "name": "Point B - Destination",
+      "x": 4.5,
+      "y": 4.5,
+      "floor": "Ground",
+      "type": "destination",
+      "accessible": true,
+      "landmark": "Destination"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge_1",
+      "from": "point_a",
+      "to": "junction",
+      "distance": 4.5,
+      "direction": "straight",
+      "walkable": true,
+      "accessible": true,
+      "indoor": true,
+      "instruction": "Walk straight ahead",
+      "estimated_time": 5,
+      "attributes": {
+        "width": 2.0,
+        "surface": "floor",
+        "lighting": "good"
+      }
+    },
+    {
+      "id": "edge_2",
+      "from": "junction",
+      "to": "point_b",
+      "distance": 4.5,
+      "direction": "left",
+      "walkable": true,
+      "accessible": true,
+      "indoor": true,
+      "instruction": "Turn left",
+      "estimated_time": 5,
+      "attributes": {
+        "width": 2.0,
+        "surface": "floor",
+        "lighting": "good"
+      }
+    }
+  ]
+}

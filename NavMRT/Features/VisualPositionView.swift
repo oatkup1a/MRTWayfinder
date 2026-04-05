@@ -15,6 +15,10 @@ struct VisualPositionView: View {
     @State private var cancellables = Set<AnyCancellable>()
     @State private var isScanning = false
     
+    // Position smoothing
+    @State private var previousPosition: (x: Double, y: Double)?
+    @AppStorage("navmrt.positionSmoothing") private var smoothingFactor: Double = 0.3
+    
     private var activeBeaconManager: BeaconSource {
         useMockBeacons ? mockBM : realBM
     }
@@ -128,6 +132,32 @@ struct VisualPositionView: View {
                 .cornerRadius(10)
             }
             .padding(.horizontal)
+            
+            // Smoothing control
+            VStack(spacing: 8) {
+                HStack {
+                    Text("Position Smoothing")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    Text("\(Int(smoothingFactor * 100))%")
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(.blue)
+                }
+                Slider(value: $smoothingFactor, in: 0...0.9, step: 0.1)
+                    .tint(.blue)
+                HStack {
+                    Text("None")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    Text("Heavy")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .padding(.horizontal)
+            
             .padding(.bottom)
         }
         .onAppear {
@@ -252,13 +282,48 @@ struct VisualPositionView: View {
         currentReadings = rssiMap
         
         // Calculate position using trilateration
-        if let position = TrilaterationPositioner.estimate(
+        if let rawPosition = TrilaterationPositioner.estimate(
             current: rssiMap,
             registry: registry,
             pathLossExponent: pathLossExponent
         ) {
-            currentPosition = position
+            // Apply exponential moving average smoothing
+            let smoothedPosition = smoothPosition(rawPosition)
+            currentPosition = smoothedPosition
         }
+    }
+    
+    private func smoothPosition(_ newPosition: PositionFix) -> PositionFix {
+        guard smoothingFactor > 0, smoothingFactor < 1.0 else {
+            // No smoothing
+            previousPosition = (newPosition.x, newPosition.y)
+            return newPosition
+        }
+        
+        guard let prev = previousPosition else {
+            // First position - no smoothing possible
+            previousPosition = (newPosition.x, newPosition.y)
+            return newPosition
+        }
+        
+        // Exponential moving average: smoothed = alpha * new + (1 - alpha) * previous
+        let alpha = smoothingFactor
+        let smoothedX = alpha * newPosition.x + (1 - alpha) * prev.x
+        let smoothedY = alpha * newPosition.y + (1 - alpha) * prev.y
+        
+        // Store for next iteration
+        previousPosition = (smoothedX, smoothedY)
+        
+        // Return smoothed position
+        return PositionFix(
+            x: smoothedX,
+            y: smoothedY,
+            z: newPosition.z,
+            floor: newPosition.floor,
+            confidence: newPosition.confidence,
+            overlap: newPosition.overlap,
+            ts: newPosition.ts
+        )
     }
     
     private func toggleScanning() {
