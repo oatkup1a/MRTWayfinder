@@ -43,9 +43,9 @@ struct POCNavigationVisualView: View {
     // MARK: - Configuration
     
     let arrivalThreshold: Double = 1.5
-    let offRouteThreshold: Double = 3.0
+    let offRouteThreshold: Double = 5.0
     let minBeaconsForFix: Int = 2
-    let minConfidenceForGuidance: Double = 0.15
+    let minConfidenceForGuidance: Double = 0.01
     let announceCooldown: TimeInterval = 2.0
     
     @State private var lastAnnounce: Date = .distantPast
@@ -127,13 +127,16 @@ struct POCNavigationVisualView: View {
             let mapWidth: Double = 6.0
             let mapHeight: Double = 6.0
             
-            // Calculate scale to fit within safe area, accounting for top and bottom overlays
-            let availableHeight = size.height - 200 // Reserve space for top bar (80) and bottom card (120)
+            // Reserve space: top bar (80px) + bottom card (150px) = 230px total
+            let topBarSpace: CGFloat = 80
+            let bottomCardSpace: CGFloat = 150
+            let availableHeight = size.height - topBarSpace - bottomCardSpace
+            
             let scale = min(size.width / mapWidth, availableHeight / mapHeight)
             
-            // Center the map vertically
+            // Position map: center it in the available space between top and bottom
             let mapActualHeight = mapHeight * scale
-            let verticalOffset = (size.height - mapActualHeight) / 2
+            let verticalOffset = topBarSpace + (availableHeight - mapActualHeight) / 2
             
             ZStack {
                 // Background gradient
@@ -144,7 +147,7 @@ struct POCNavigationVisualView: View {
                 )
                 .ignoresSafeArea()
                 
-                // Map content group - centered
+                // Map content group - positioned with offset from top
                 ZStack {
                     // Grid
                     gridView(size: CGSize(width: size.width, height: mapActualHeight), scale: scale, mapWidth: mapWidth, mapHeight: mapHeight)
@@ -159,7 +162,8 @@ struct POCNavigationVisualView: View {
                     currentPositionView(size: CGSize(width: size.width, height: mapActualHeight), scale: scale)
                 }
                 .frame(height: mapActualHeight)
-                .offset(y: verticalOffset - size.height / 2 + mapActualHeight / 2)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                .offset(x: 20, y: verticalOffset - 30)
                 
                 // Compass/scale indicator - keep in original position
                 mapLegend
@@ -758,7 +762,6 @@ struct POCNavigationVisualView: View {
     private func handleOffRoute() {
         let now = Date()
         if now.timeIntervalSince(lastAnnounce) > 5.0 {
-            announceIfNeeded("You appear to be off the route. Please return to the path.")
             Haptics.warn()
         }
     }
