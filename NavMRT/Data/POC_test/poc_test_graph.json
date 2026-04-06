@@ -5,7 +5,7 @@
       "x": 0.0,
       "y": 0.5,
       "floor": "Ground",
-      "type": "waypoint"
+      "type": "start"
     },
     {
       "id": "Mid1",
@@ -19,7 +19,7 @@
       "x": 4.0,
       "y": 0.5,
       "floor": "Ground",
-      "type": "waypoint"
+      "type": "junction"
     },
     {
       "id": "Mid2",
@@ -33,7 +33,7 @@
       "x": 5.0,
       "y": 5.0,
       "floor": "Ground",
-      "type": "waypoint"
+      "type": "destination"
     }
   ],
   "edges": [
@@ -42,7 +42,9 @@
       "to": "Mid1",
       "len": 2.0,
       "attrs": {
-        "tactile": false
+        "tactile": true,
+        "stairs": false,
+        "elevator": false
       }
     },
     {
@@ -50,23 +52,29 @@
       "to": "Junction",
       "len": 2.0,
       "attrs": {
-        "tactile": false
+        "tactile": true,
+        "stairs": false,
+        "elevator": false
       }
     },
     {
       "from": "Junction",
       "to": "Mid2",
-      "len": 2.55,
+      "len": 2.5,
       "attrs": {
-        "tactile": false
+        "tactile": true,
+        "stairs": false,
+        "elevator": false
       }
     },
     {
       "from": "Mid2",
       "to": "B",
-      "len": 2.06,
+      "len": 2.1,
       "attrs": {
-        "tactile": false
+        "tactile": true,
+        "stairs": false,
+        "elevator": false
       }
     }
   ]

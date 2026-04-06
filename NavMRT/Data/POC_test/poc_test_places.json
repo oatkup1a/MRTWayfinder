@@ -1,55 +1,31 @@
 {
-  "point_a": {
+  "A": {
     "name": "Point A - Start",
-    "category": "start",
-    "startAllowed": true,
-    "destAllowed": true
-  },
-  "corridor1_1m": {
-    "name": "First Corridor - 1m",
     "category": "waypoint",
     "startAllowed": true,
     "destAllowed": true
   },
-  "corridor1_mid": {
-    "name": "First Corridor - Midpoint",
+  "Mid1": {
+    "name": "Mid1 Hallway",
     "category": "waypoint",
-    "startAllowed": true,
-    "destAllowed": true
+    "startAllowed": false,
+    "destAllowed": false
   },
-  "approaching_junction": {
-    "name": "Approaching Junction",
+  "Junction": {
+    "name": "Junction Area",
     "category": "waypoint",
-    "startAllowed": true,
-    "destAllowed": true
+    "startAllowed": false,
+    "destAllowed": false
   },
-  "junction": {
-    "name": "Junction - Turn Point",
-    "category": "junction",
-    "startAllowed": true,
-    "destAllowed": true
-  },
-  "after_turn": {
-    "name": "After Turn",
+  "Mid2": {
+    "name": "Mid2 Hallway",
     "category": "waypoint",
-    "startAllowed": true,
-    "destAllowed": true
+    "startAllowed": false,
+    "destAllowed": false
   },
-  "corridor2_mid": {
-    "name": "Second Corridor - Midpoint",
-    "category": "waypoint",
-    "startAllowed": true,
-    "destAllowed": true
-  },
-  "approaching_b": {
-    "name": "Approaching Point B",
-    "category": "waypoint",
-    "startAllowed": true,
-    "destAllowed": true
-  },
-  "point_b": {
+  "B": {
     "name": "Point B - Destination",
-    "category": "destination",
+    "category": "waypoint",
     "startAllowed": true,
     "destAllowed": true
   }

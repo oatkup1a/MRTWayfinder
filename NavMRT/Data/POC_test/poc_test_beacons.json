@@ -1,116 +1,116 @@
 {
-  "station": "POC Test Area",
+  "station": "POC Test Environment",
   "floor": "Ground",
   "beacons": [
     {
-      "id": "Beacon_A_Left",
+      "id": "Top_leftA",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 1,
       "txPower": -59,
       "x": 0.0,
       "y": 1.0,
-      "z": 2.0,
-      "area": "Point A - Left wall"
+      "z": 1.5,
+      "area": "Point A vicinity"
     },
     {
-      "id": "Beacon_A_Center",
+      "id": "Bottom_leftA",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 2,
       "txPower": -59,
       "x": 0.0,
       "y": 0.0,
-      "z": 2.0,
-      "area": "Point A - Center"
+      "z": 1.5,
+      "area": "Point A corner"
     },
     {
-      "id": "Beacon_A_Right",
+      "id": "Top_rightA",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 3,
       "txPower": -59,
       "x": 4.0,
       "y": 1.0,
-      "z": 2.0,
-      "area": "Point A - Right wall"
+      "z": 1.5,
+      "area": "Junction area"
     },
     {
-      "id": "Beacon_Corridor1_Mid",
+      "id": "Bottom_rightA",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 4,
       "txPower": -59,
       "x": 4.0,
       "y": 0.0,
-      "z": 2.0,
-      "area": "First corridor - Midpoint center"
+      "z": 1.5,
+      "area": "Junction corner"
     },
     {
-      "id": "Beacon_Junction_Before",
+      "id": "MidA",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 5,
       "txPower": -59,
       "x": 2.0,
       "y": 0.5,
-      "z": 2.0,
-      "area": "Approaching junction"
+      "z": 1.5,
+      "area": "Mid1 hallway"
     },
     {
-      "id": "Beacon_Junction_Corner",
+      "id": "Top_leftB",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 6,
       "txPower": -59,
       "x": 4.0,
       "y": 5.0,
-      "z": 2.0,
-      "area": "Junction corner - Turn point"
+      "z": 1.5,
+      "area": "Point B vicinity"
     },
     {
-      "id": "Beacon_Junction_After",
+      "id": "Top_rightB",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 7,
       "txPower": -59,
       "x": 5.0,
       "y": 5.0,
-      "z": 2.0,
-      "area": "Just after turn"
+      "z": 1.5,
+      "area": "Point B"
     },
     {
-      "id": "Beacon_Corridor2_Mid",
+      "id": "Bottom_righB",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 8,
       "txPower": -59,
       "x": 5.0,
       "y": 1.0,
-      "z": 2.0,
-      "area": "Second corridor - Midpoint center"
+      "z": 1.5,
+      "area": "Vertical hallway start"
     },
     {
-      "id": "Beacon_B_Left",
+      "id": "MidB",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 9,
       "txPower": -59,
       "x": 4.5,
       "y": 3.0,
-      "z": 2.0,
-      "area": "Point B - Left wall"
+      "z": 1.5,
+      "area": "Mid2 hallway"
     },
     {
-      "id": "Beacon_B_Right",
+      "id": "Junction_bottom",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 10,
       "txPower": -59,
       "x": 5.0,
       "y": 0.0,
-      "z": 2.0,
-      "area": "Point B - Right wall"
+      "z": 1.5,
+      "area": "East corner"
     }
   ]
 }
