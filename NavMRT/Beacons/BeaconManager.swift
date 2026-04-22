@@ -26,6 +26,8 @@ final class BeaconManager: NSObject, ObservableObject, BeaconSource {
     private var isRanging = false
     private var isBluetoothScanning = false
     private var latestMap: [String: BeaconReading] = [:]
+    private var rssiHistory: [String: [Int]] = [:]  // Store recent RSSI values for averaging
+    private let rssiHistorySize = 5  // Number of readings to average
     private var registeredBeaconIds: Set<String> = []
     private var includeUnregisteredBeacons = false
     private var loggedUnregisteredBeaconIds: Set<String> = []
@@ -272,7 +274,35 @@ private extension BeaconManager {
             setStatusText("Detected unregistered beacon")
         }
 
-        latestMap[reading.id] = reading
+        // Apply RSSI smoothing
+        let smoothedRSSI = smoothRSSI(for: reading.id, newValue: reading.rssi)
+        let smoothedReading = BeaconReading(
+            id: reading.id,
+            rssi: smoothedRSSI,
+            ts: reading.ts
+        )
+        
+        latestMap[reading.id] = smoothedReading
+    }
+    
+    func smoothRSSI(for beaconId: String, newValue: Int) -> Int {
+        // Get or create history array
+        var history = rssiHistory[beaconId] ?? []
+        
+        // Add new value
+        history.append(newValue)
+        
+        // Keep only recent values
+        if history.count > rssiHistorySize {
+            history.removeFirst()
+        }
+        
+        // Store updated history
+        rssiHistory[beaconId] = history
+        
+        // Return moving average
+        let sum = history.reduce(0, +)
+        return sum / history.count
     }
 
     func setStatusText(_ text: String) {

@@ -1,0 +1,61 @@
+{
+  "station": "Test Room",
+  "floor": "Ground",
+  "beacons": [
+    {
+      "id": "Bottom_Left",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 1,
+      "txPower": -59,
+      "x": 0.0,
+      "y": 0.0,
+      "z": 2.0,
+      "area": "Southwest"
+    },
+    {
+      "id": "Top_Left",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 2,
+      "txPower": -59,
+      "x": 0.0,
+      "y": 3.0,
+      "z": 2.0,
+      "area": "Northwest"
+    },
+    {
+      "id": "Center_Middle",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 3,
+      "txPower": -59,
+      "x": 1.5,
+      "y": 1.5,
+      "z": 2.0,
+      "area": "Center"
+    },
+    {
+      "id": "Top_Right",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 4,
+      "txPower": -59,
+      "x": 3.0,
+      "y": 3.0,
+      "z": 2.0,
+      "area": "Northeast"
+    },
+    {
+      "id": "Bottom_Right",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 5,
+      "txPower": -59,
+      "x": 3.0,
+      "y": 0.0,
+      "z": 2.0,
+      "area": "Southeast"
+    }
+  ]
+}

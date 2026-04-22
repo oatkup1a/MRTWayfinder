@@ -1,0 +1,43 @@
+{
+  "nodes": [
+    {"id": "center", "x": 1.5, "y": 1.5, "floor": "Ground", "type": "waypoint"},
+    {"id": "bottom_left", "x": 0.2, "y": 0.2, "floor": "Ground", "type": "waypoint"},
+    {"id": "top_left", "x": 0.2, "y": 2.8, "floor": "Ground", "type": "waypoint"},
+    {"id": "top_right", "x": 2.8, "y": 2.8, "floor": "Ground", "type": "waypoint"},
+    {"id": "bottom_right", "x": 2.8, "y": 0.2, "floor": "Ground", "type": "waypoint"},
+    {"id": "left_center", "x": 0.75, "y": 1.5, "floor": "Ground", "type": "waypoint"},
+    {"id": "right_center", "x": 2.25, "y": 1.5, "floor": "Ground", "type": "waypoint"},
+    {"id": "bottom_center", "x": 1.5, "y": 0.5, "floor": "Ground", "type": "waypoint"},
+    {"id": "top_center", "x": 1.5, "y": 2.5, "floor": "Ground", "type": "waypoint"},
+    {"id": "sw_quadrant", "x": 0.75, "y": 0.75, "floor": "Ground", "type": "waypoint"},
+    {"id": "se_quadrant", "x": 2.25, "y": 0.75, "floor": "Ground", "type": "waypoint"},
+    {"id": "nw_quadrant", "x": 0.75, "y": 2.25, "floor": "Ground", "type": "waypoint"},
+    {"id": "ne_quadrant", "x": 2.25, "y": 2.25, "floor": "Ground", "type": "waypoint"}
+  ],
+  "edges": [
+    {"from": "center", "to": "left_center", "len": 0.75, "attrs": {"tactile": false, "stairs": false, "elevator": false}},
+    {"from": "center", "to": "right_center", "len": 0.75, "attrs": {"tactile": false, "stairs": false, "elevator": false}},
+    {"from": "center", "to": "bottom_center", "len": 1.0, "attrs": {"tactile": false, "stairs": false, "elevator": false}},
+    {"from": "center", "to": "top_center", "len": 1.0, "attrs": {"tactile": false, "stairs": false, "elevator": false}},
+    {"from": "bottom_left", "to": "left_center", "len": 1.37, "attrs": {"tactile": false, "stairs": false, "elevator": false}},
+    {"from": "top_left", "to": "left_center", "len": 1.37, "attrs": {"tactile": false, "stairs": false, "elevator": false}},
+    {"from": "bottom_right", "to": "right_center", "len": 1.37, "attrs": {"tactile": false, "stairs": false, "elevator": false}},
+    {"from": "top_right", "to": "right_center", "len": 1.37, "attrs": {"tactile": false, "stairs": false, "elevator": false}},
+    {"from": "bottom_left", "to": "bottom_center", "len": 1.37, "attrs": {"tactile": false, "stairs": false, "elevator": false}},
+    {"from": "bottom_right", "to": "bottom_center", "len": 1.37, "attrs": {"tactile": false, "stairs": false, "elevator": false}},
+    {"from": "top_left", "to": "top_center", "len": 1.37, "attrs": {"tactile": false, "stairs": false, "elevator": false}},
+    {"from": "top_right", "to": "top_center", "len": 1.37, "attrs": {"tactile": false, "stairs": false, "elevator": false}},
+    {"from": "bottom_left", "to": "sw_quadrant", "len": 0.78, "attrs": {"tactile": false, "stairs": false, "elevator": false}},
+    {"from": "top_left", "to": "nw_quadrant", "len": 0.78, "attrs": {"tactile": false, "stairs": false, "elevator": false}},
+    {"from": "top_right", "to": "ne_quadrant", "len": 0.78, "attrs": {"tactile": false, "stairs": false, "elevator": false}},
+    {"from": "bottom_right", "to": "se_quadrant", "len": 0.78, "attrs": {"tactile": false, "stairs": false, "elevator": false}},
+    {"from": "sw_quadrant", "to": "left_center", "len": 0.75, "attrs": {"tactile": false, "stairs": false, "elevator": false}},
+    {"from": "se_quadrant", "to": "right_center", "len": 0.75, "attrs": {"tactile": false, "stairs": false, "elevator": false}},
+    {"from": "nw_quadrant", "to": "left_center", "len": 0.75, "attrs": {"tactile": false, "stairs": false, "elevator": false}},
+    {"from": "ne_quadrant", "to": "right_center", "len": 0.75, "attrs": {"tactile": false, "stairs": false, "elevator": false}},
+    {"from": "sw_quadrant", "to": "center", "len": 0.90, "attrs": {"tactile": false, "stairs": false, "elevator": false}},
+    {"from": "se_quadrant", "to": "center", "len": 0.90, "attrs": {"tactile": false, "stairs": false, "elevator": false}},
+    {"from": "nw_quadrant", "to": "center", "len": 0.90, "attrs": {"tactile": false, "stairs": false, "elevator": false}},
+    {"from": "ne_quadrant", "to": "center", "len": 0.90, "attrs": {"tactile": false, "stairs": false, "elevator": false}}
+  ]
+}

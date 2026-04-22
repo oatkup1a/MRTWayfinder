@@ -1,0 +1,15 @@
+{
+  "center": {"name": "Room Center", "category": "waypoint", "startAllowed": true, "destAllowed": true},
+  "bottom_left": {"name": "Bottom Left Corner", "category": "waypoint", "startAllowed": true, "destAllowed": true},
+  "top_left": {"name": "Top Left Corner", "category": "waypoint", "startAllowed": true, "destAllowed": true},
+  "top_right": {"name": "Top Right Corner", "category": "waypoint", "startAllowed": true, "destAllowed": true},
+  "bottom_right": {"name": "Bottom Right Corner", "category": "waypoint", "startAllowed": true, "destAllowed": true},
+  "left_center": {"name": "Left Center", "category": "waypoint", "startAllowed": true, "destAllowed": true},
+  "right_center": {"name": "Right Center", "category": "waypoint", "startAllowed": true, "destAllowed": true},
+  "bottom_center": {"name": "Bottom Center", "category": "waypoint", "startAllowed": true, "destAllowed": true},
+  "top_center": {"name": "Top Center", "category": "waypoint", "startAllowed": true, "destAllowed": true},
+  "sw_quadrant": {"name": "Southwest Area", "category": "waypoint", "startAllowed": true, "destAllowed": true},
+  "se_quadrant": {"name": "Southeast Area", "category": "waypoint", "startAllowed": true, "destAllowed": true},
+  "nw_quadrant": {"name": "Northwest Area", "category": "waypoint", "startAllowed": true, "destAllowed": true},
+  "ne_quadrant": {"name": "Northeast Area", "category": "waypoint", "startAllowed": true, "destAllowed": true}
+}

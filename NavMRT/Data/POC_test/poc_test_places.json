@@ -1,0 +1,32 @@
+{
+  "A": {
+    "name": "Point A - Start",
+    "category": "waypoint",
+    "startAllowed": true,
+    "destAllowed": true
+  },
+  "Mid1": {
+    "name": "Mid1 Hallway",
+    "category": "waypoint",
+    "startAllowed": false,
+    "destAllowed": false
+  },
+  "Junction": {
+    "name": "Junction Area",
+    "category": "waypoint",
+    "startAllowed": false,
+    "destAllowed": false
+  },
+  "Mid2": {
+    "name": "Mid2 Hallway",
+    "category": "waypoint",
+    "startAllowed": false,
+    "destAllowed": false
+  },
+  "B": {
+    "name": "Point B - Destination",
+    "category": "waypoint",
+    "startAllowed": true,
+    "destAllowed": true
+  }
+}
