@@ -3,7 +3,7 @@
   "floor": "G",
   "beacons": [
     {
-      "id": "S1_corner_0_0",
+      "id": "S1_1",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 1,
@@ -14,7 +14,7 @@
       "area": "sq1"
     },
     {
-      "id": "S1_corner_0_5",
+      "id": "S1_2",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 2,
@@ -25,7 +25,7 @@
       "area": "sq1"
     },
     {
-      "id": "S1_center_1",
+      "id": "S1_3",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 3,
@@ -36,7 +36,7 @@
       "area": "sq1"
     },
     {
-      "id": "S1_corner_5_0",
+      "id": "S1_4",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 4,
@@ -47,7 +47,7 @@
       "area": "sq1_sq2"
     },
     {
-      "id": "S1_corner_5_5",
+      "id": "S1_5",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 5,
@@ -58,7 +58,7 @@
       "area": "sq1_sq2"
     },
     {
-      "id": "S1_center_2",
+      "id": "S1_6",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 6,
@@ -69,7 +69,7 @@
       "area": "sq2"
     },
     {
-      "id": "S1_corner_10_0",
+      "id": "S1_7",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 7,
@@ -80,7 +80,7 @@
       "area": "sq2_sq3"
     },
     {
-      "id": "S1_corner_10_5",
+      "id": "S1_8",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 8,
@@ -91,7 +91,7 @@
       "area": "sq2_sq3"
     },
     {
-      "id": "S1_center_3",
+      "id": "S1_9",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 9,
@@ -102,7 +102,7 @@
       "area": "sq3"
     },
     {
-      "id": "S1_corner_15_0",
+      "id": "S1_10",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 10,
@@ -113,7 +113,7 @@
       "area": "sq3_sq4"
     },
     {
-      "id": "S1_corner_15_5",
+      "id": "S1_11",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 11,
@@ -124,7 +124,7 @@
       "area": "sq3_sq4"
     },
     {
-      "id": "S1_center_4",
+      "id": "S1_12",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 12,
@@ -135,7 +135,7 @@
       "area": "sq4"
     },
     {
-      "id": "S1_corner_20_0",
+      "id": "S1_13",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 13,
@@ -146,7 +146,7 @@
       "area": "sq4"
     },
     {
-      "id": "S1_corner_20_5",
+      "id": "S1_14",
       "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
       "major": 1,
       "minor": 14,
