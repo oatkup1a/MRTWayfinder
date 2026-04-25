@@ -22,6 +22,7 @@ enum DataPackCatalog {
         DataPackOption(id: "lumphini", name: "Lumphini"),
         DataPackOption(id: "S1_straight", name: "Section 1-Straight"),
         DataPackOption(id: "S2_turn", name: "Section 2-Turn"),
+        DataPackOption(id: "S3_zigzag", name: "Section 3-Zigzag"),
     ]
 
     static func pack(by id: String) -> DataPackOption? {
