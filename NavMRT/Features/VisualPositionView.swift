@@ -347,6 +347,68 @@ struct VisualPositionView: View {
     }
 }
 
+// MARK: - Map Transform
+
+struct MapTransform {
+    let worldMinX: Double
+    let worldMaxX: Double
+    let worldMinY: Double
+    let worldMaxY: Double
+    let scale: CGFloat
+    let offset: CGPoint
+
+    init(beacons: [Beacon], frameSize: CGSize) {
+        guard !beacons.isEmpty else {
+            worldMinX = 0; worldMaxX = 10; worldMinY = 0; worldMaxY = 10
+            scale = 1; offset = .zero
+            return
+        }
+
+        let xs = beacons.map { $0.x }
+        let ys = beacons.map { $0.y }
+
+        let rawMinX = xs.min() ?? 0
+        let rawMaxX = xs.max() ?? 10
+        let rawMinY = ys.min() ?? 0
+        let rawMaxY = ys.max() ?? 10
+
+        let padding = max((rawMaxX - rawMinX), (rawMaxY - rawMinY)) * 0.08 + 1.0
+        worldMinX = rawMinX - padding
+        worldMaxX = rawMaxX + padding
+        worldMinY = rawMinY - padding
+        worldMaxY = rawMaxY + padding
+
+        let worldW = worldMaxX - worldMinX
+        let worldH = worldMaxY - worldMinY
+
+        scale = min(frameSize.width / CGFloat(worldW), frameSize.height / CGFloat(worldH))
+        offset = CGPoint(
+            x: (frameSize.width - CGFloat(worldW) * scale) / 2,
+            y: (frameSize.height - CGFloat(worldH) * scale) / 2
+        )
+    }
+
+    func toScreen(x: Double, y: Double) -> CGPoint {
+        CGPoint(
+            x: offset.x + CGFloat(x - worldMinX) * scale,
+            y: offset.y + CGFloat(worldMaxY - y) * scale
+        )
+    }
+
+    var gridSpacingMeters: Double {
+        let worldW = worldMaxX - worldMinX
+        let raw = worldW / 6.0
+        if raw <= 1 { return 1 }
+        if raw <= 2 { return 2 }
+        if raw <= 5 { return 5 }
+        return 10
+    }
+
+    var worldSize: (width: Double, height: Double) {
+        (worldMaxX - worldMinX, worldMaxY - worldMinY)
+    }
+}
+
 // MARK: - Position Map Visualization
 
 struct PositionMapView: View {
@@ -354,56 +416,27 @@ struct PositionMapView: View {
     let currentPosition: PositionFix?
     let currentReadings: [String: Double]
     let frameSize: CGSize
-    
-    private var bounds: (minX: Double, maxX: Double, minY: Double, maxY: Double)? {
-        guard let registry = beaconRegistry, !registry.beacons.isEmpty else {
-            return nil
-        }
-        
-        let xs = registry.beacons.map { $0.x }
-        let ys = registry.beacons.map { $0.y }
-        
-        let minX = xs.min() ?? 0
-        let maxX = xs.max() ?? 10
-        let minY = ys.min() ?? 0
-        let maxY = ys.max() ?? 10
-        
-        // Add 10% padding
-        let paddingX = (maxX - minX) * 0.1
-        let paddingY = (maxY - minY) * 0.1
-        
-        return (
-            minX: minX - paddingX,
-            maxX: maxX + paddingX,
-            minY: minY - paddingY,
-            maxY: maxY + paddingY
-        )
+
+    private var transform: MapTransform? {
+        guard let registry = beaconRegistry, !registry.beacons.isEmpty else { return nil }
+        return MapTransform(beacons: registry.beacons, frameSize: frameSize)
     }
-    
+
     var body: some View {
         ZStack {
-            // Background grid
-            GridPattern()
-                .stroke(Color(.systemGray4), lineWidth: 1)
-            
-            if let registry = beaconRegistry, let bounds = bounds {
-                // Beacons
+            if let registry = beaconRegistry, let t = transform {
+                MeterGrid(transform: t)
+
                 ForEach(registry.beacons, id: \.compositeId) { beacon in
                     BeaconMarker(
                         beacon: beacon,
-                        bounds: bounds,
-                        frameSize: frameSize,
+                        transform: t,
                         rssi: currentReadings[beacon.compositeId]
                     )
                 }
-                
-                // Current position
+
                 if let position = currentPosition {
-                    PositionMarker(
-                        position: position,
-                        bounds: bounds,
-                        frameSize: frameSize
-                    )
+                    PositionMarker(position: position, transform: t)
                 }
             } else {
                 Text("No beacon data loaded")
@@ -411,52 +444,57 @@ struct PositionMapView: View {
             }
         }
     }
-    
-    private func toScreenCoordinates(x: Double, y: Double) -> CGPoint {
-        guard let bounds = bounds else {
-            return CGPoint(x: frameSize.width / 2, y: frameSize.height / 2)
-        }
-        
-        let rangeX = bounds.maxX - bounds.minX
-        let rangeY = bounds.maxY - bounds.minY
-        
-        // Convert to 0-1 range, then to screen coordinates
-        // Flip Y because SwiftUI Y increases downward
-        let normalizedX = (x - bounds.minX) / rangeX
-        let normalizedY = 1.0 - (y - bounds.minY) / rangeY
-        
-        return CGPoint(
-            x: normalizedX * frameSize.width,
-            y: normalizedY * frameSize.height
-        )
-    }
 }
 
-// MARK: - Grid Pattern
+// MARK: - Meter Grid
 
-struct GridPattern: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        
-        let gridSize: CGFloat = 20
-        
-        // Vertical lines
-        var x: CGFloat = 0
-        while x <= rect.width {
-            path.move(to: CGPoint(x: x, y: 0))
-            path.addLine(to: CGPoint(x: x, y: rect.height))
-            x += gridSize
+struct MeterGrid: View {
+    let transform: MapTransform
+
+    var body: some View {
+        Canvas { context, size in
+            let spacing = transform.gridSpacingMeters
+            let shading = GraphicsContext.Shading.color(.gray.opacity(0.25))
+            let lineStyle = StrokeStyle(lineWidth: 0.5)
+
+            var worldX = ceil(transform.worldMinX / spacing) * spacing
+            while worldX <= transform.worldMaxX {
+                let pt = transform.toScreen(x: worldX, y: 0)
+                var line = Path()
+                line.move(to: CGPoint(x: pt.x, y: 0))
+                line.addLine(to: CGPoint(x: pt.x, y: size.height))
+                context.stroke(line, with: shading, style: lineStyle)
+
+                let label = context.resolve(
+                    Text(formatMeter(worldX))
+                        .font(.system(size: 9))
+                        .foregroundColor(.secondary)
+                )
+                context.draw(label, at: CGPoint(x: pt.x, y: size.height - 8))
+                worldX += spacing
+            }
+
+            var worldY = ceil(transform.worldMinY / spacing) * spacing
+            while worldY <= transform.worldMaxY {
+                let pt = transform.toScreen(x: 0, y: worldY)
+                var line = Path()
+                line.move(to: CGPoint(x: 0, y: pt.y))
+                line.addLine(to: CGPoint(x: size.width, y: pt.y))
+                context.stroke(line, with: shading, style: lineStyle)
+
+                let label = context.resolve(
+                    Text(formatMeter(worldY))
+                        .font(.system(size: 9))
+                        .foregroundColor(.secondary)
+                )
+                context.draw(label, at: CGPoint(x: 14, y: pt.y))
+                worldY += spacing
+            }
         }
-        
-        // Horizontal lines
-        var y: CGFloat = 0
-        while y <= rect.height {
-            path.move(to: CGPoint(x: 0, y: y))
-            path.addLine(to: CGPoint(x: rect.width, y: y))
-            y += gridSize
-        }
-        
-        return path
+    }
+
+    private func formatMeter(_ v: Double) -> String {
+        v == v.rounded() ? "\(Int(v))m" : String(format: "%.1fm", v)
     }
 }
 
@@ -464,41 +502,29 @@ struct GridPattern: Shape {
 
 struct BeaconMarker: View {
     let beacon: Beacon
-    let bounds: (minX: Double, maxX: Double, minY: Double, maxY: Double)
-    let frameSize: CGSize
+    let transform: MapTransform
     let rssi: Double?
-    
+
     private var position: CGPoint {
-        let rangeX = bounds.maxX - bounds.minX
-        let rangeY = bounds.maxY - bounds.minY
-        
-        let normalizedX = (beacon.x - bounds.minX) / rangeX
-        let normalizedY = 1.0 - (beacon.y - bounds.minY) / rangeY
-        
-        return CGPoint(
-            x: normalizedX * frameSize.width,
-            y: normalizedY * frameSize.height
-        )
+        transform.toScreen(x: beacon.x, y: beacon.y)
     }
-    
+
     private var isActive: Bool {
         rssi != nil
     }
-    
+
     var body: some View {
         ZStack {
-            // Signal rings for active beacons
             if isActive {
                 Circle()
                     .stroke(Color.blue.opacity(0.3), lineWidth: 2)
                     .frame(width: 40, height: 40)
-                
+
                 Circle()
                     .stroke(Color.blue.opacity(0.2), lineWidth: 2)
                     .frame(width: 60, height: 60)
             }
-            
-            // Beacon icon
+
             Circle()
                 .fill(isActive ? Color.blue : Color.gray)
                 .frame(width: 20, height: 20)
@@ -507,13 +533,12 @@ struct BeaconMarker: View {
                         .font(.system(size: 10))
                         .foregroundStyle(.white)
                 )
-            
-            // Label
+
             VStack(spacing: 2) {
                 Text(beacon.id)
                     .font(.system(size: 9, weight: .medium))
                     .foregroundStyle(isActive ? .primary : .secondary)
-                
+
                 if let rssi = rssi {
                     Text("\(Int(rssi)) dBm")
                         .font(.system(size: 8))
@@ -533,27 +558,16 @@ struct BeaconMarker: View {
 
 struct PositionMarker: View {
     let position: PositionFix
-    let bounds: (minX: Double, maxX: Double, minY: Double, maxY: Double)
-    let frameSize: CGSize
-    
+    let transform: MapTransform
+
     @State private var pulseScale: CGFloat = 1.0
-    
+
     private var screenPosition: CGPoint {
-        let rangeX = bounds.maxX - bounds.minX
-        let rangeY = bounds.maxY - bounds.minY
-        
-        let normalizedX = (position.x - bounds.minX) / rangeX
-        let normalizedY = 1.0 - (position.y - bounds.minY) / rangeY
-        
-        return CGPoint(
-            x: normalizedX * frameSize.width,
-            y: normalizedY * frameSize.height
-        )
+        transform.toScreen(x: position.x, y: position.y)
     }
-    
+
     var body: some View {
         ZStack {
-            // Pulsing outer circle
             Circle()
                 .fill(Color.green.opacity(0.3))
                 .frame(width: 30, height: 30)
@@ -562,8 +576,7 @@ struct PositionMarker: View {
                     .easeInOut(duration: 1.0).repeatForever(autoreverses: true),
                     value: pulseScale
                 )
-            
-            // Inner position dot
+
             Circle()
                 .fill(Color.green)
                 .frame(width: 16, height: 16)
@@ -571,8 +584,7 @@ struct PositionMarker: View {
                     Circle()
                         .stroke(Color.white, lineWidth: 2)
                 )
-            
-            // Crosshair
+
             Path { path in
                 path.move(to: CGPoint(x: -15, y: 0))
                 path.addLine(to: CGPoint(x: -5, y: 0))
@@ -584,8 +596,7 @@ struct PositionMarker: View {
                 path.addLine(to: CGPoint(x: 0, y: 15))
             }
             .stroke(Color.green, lineWidth: 1.5)
-            
-            // Label
+
             Text("YOU")
                 .font(.system(size: 10, weight: .bold))
                 .foregroundStyle(.white)

@@ -8,7 +8,6 @@ struct HomeView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     hero
-                    modeCard
 
                     VStack(spacing: 16) {
                         NavigationLink {
@@ -92,54 +91,6 @@ struct HomeView: View {
         .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .stroke(Color.black.opacity(0.08), lineWidth: 1)
-        )
-    }
-
-    private var modeCard: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack(spacing: 12) {
-                Image(systemName: useMockBeacons ? "waveform.path.ecg" : "dot.radiowaves.up.forward")
-                    .font(.title3)
-                    .foregroundStyle(useMockBeacons ? .orange : .green)
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(useMockBeacons ? "Mock beacon mode is active" : "Real beacon mode is active")
-                        .font(.headline)
-                        .foregroundStyle(Color(red: 0.13, green: 0.12, blue: 0.11))
-                    Text("Choose the beacon source before starting guidance.")
-                        .font(.footnote)
-                        .foregroundStyle(Color(red: 0.30, green: 0.28, blue: 0.24))
-                }
-
-                Spacer()
-            }
-
-            HStack(spacing: 10) {
-                modeButton(
-                    title: "Real",
-                    systemImage: "dot.radiowaves.up.forward",
-                    isSelected: !useMockBeacons,
-                    activeColor: Color(red: 0.16, green: 0.56, blue: 0.28)
-                ) {
-                    useMockBeacons = false
-                }
-
-                modeButton(
-                    title: "Mock",
-                    systemImage: "waveform.path.ecg",
-                    isSelected: useMockBeacons,
-                    activeColor: Color(red: 0.86, green: 0.52, blue: 0.10)
-                ) {
-                    useMockBeacons = true
-                }
-            }
-        }
-        .padding(18)
-        .background(Color(red: 0.99, green: 0.98, blue: 0.96))
-        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
                 .stroke(Color.black.opacity(0.08), lineWidth: 1)
         )
     }
