@@ -1,0 +1,26 @@
+{
+  "C1": {
+    "name": "Square 1 Center",
+    "category": "waypoint",
+    "startAllowed": false,
+    "destAllowed": false
+  },
+  "C2": {
+    "name": "Square 2 Center",
+    "category": "waypoint",
+    "startAllowed": false,
+    "destAllowed": false
+  },
+  "C3": {
+    "name": "Square 3 Center (Turn)",
+    "category": "waypoint",
+    "startAllowed": false,
+    "destAllowed": false
+  },
+  "C4": {
+    "name": "Square 4 Center",
+    "category": "waypoint",
+    "startAllowed": false,
+    "destAllowed": true
+  }
+}
