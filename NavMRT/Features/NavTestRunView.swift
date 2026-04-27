@@ -243,7 +243,10 @@ struct NavigationMapView: View {
             graphNodeMarkers
 
             if let pos = engine.currentPosition {
-                NavigationPositionMarker(position: pos, transform: transform)
+                NavigationPositionMarker(
+                    position: snappedPosition(pos),
+                    transform: transform
+                )
             }
 
             if let dest = graph.nodes.first(where: { $0.id == engine.route.last?.id ?? "" }) {
@@ -299,6 +302,58 @@ struct NavigationMapView: View {
                 )
                 .position(pt)
         }
+    }
+
+    // MARK: - Snap to Route
+
+    private func snappedPosition(_ pos: PositionFix) -> PositionFix {
+        let route = engine.route
+        guard route.count >= 2 else { return pos }
+
+        var bestX = pos.x
+        var bestY = pos.y
+        var bestDist = Double.greatestFiniteMagnitude
+
+        for i in 0..<(route.count - 1) {
+            let ax = route[i].x, ay = route[i].y
+            let bx = route[i + 1].x, by = route[i + 1].y
+            let (px, py, d) = projectOntoSegment(
+                px: pos.x, py: pos.y,
+                ax: ax, ay: ay, bx: bx, by: by
+            )
+            if d < bestDist {
+                bestDist = d
+                bestX = px
+                bestY = py
+            }
+        }
+
+        return PositionFix(
+            x: bestX, y: bestY,
+            floor: pos.floor,
+            confidence: pos.confidence,
+            overlap: pos.overlap,
+            ts: pos.ts
+        )
+    }
+
+    private func projectOntoSegment(
+        px: Double, py: Double,
+        ax: Double, ay: Double,
+        bx: Double, by: Double
+    ) -> (x: Double, y: Double, dist: Double) {
+        let abx = bx - ax, aby = by - ay
+        let apx = px - ax, apy = py - ay
+        let ab2 = abx * abx + aby * aby
+        guard ab2 > 0 else {
+            let d = sqrt(apx * apx + apy * apy)
+            return (ax, ay, d)
+        }
+        let t = max(0, min(1, (apx * abx + apy * aby) / ab2))
+        let projX = ax + t * abx
+        let projY = ay + t * aby
+        let dx = px - projX, dy = py - projY
+        return (projX, projY, sqrt(dx * dx + dy * dy))
     }
 }
 

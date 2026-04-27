@@ -32,10 +32,14 @@ final class NavigationEngine {
 
     private var cancellable: AnyCancellable?
     private var offRouteStreak: Int = 0
+    private let speech = Speech()
+    private var lastSpokenSegment: Int = -1
+    private var hasSpokenApproaching: Bool = false
+    private let approachThreshold: Double = 3.0
 
     private let arrivalThreshold: Double = 1.5
-    private let offRouteThreshold: Double = 3.0
-    private let offRouteConfirmCount: Int = 3
+    private let offRouteThreshold: Double = 5.0
+    private let offRouteConfirmCount: Int = 5
 
     init(
         destinationId: String,
@@ -85,7 +89,9 @@ final class NavigationEngine {
 
         if checkArrival(fix: fix) {
             status = .arrived
-            instruction = NavInstruction(text: "You have arrived at your destination.", distanceToNext: 0)
+            let arrivalText = "You have arrived at your destination."
+            instruction = NavInstruction(text: arrivalText, distanceToNext: 0)
+            speech.say(arrivalText)
             stop()
             status = .arrived
             return
@@ -157,6 +163,9 @@ final class NavigationEngine {
         if !newRoute.isEmpty {
             route = newRoute
             currentSegmentIndex = 0
+            lastSpokenSegment = -1
+            hasSpokenApproaching = false
+            speech.say("Rerouting.")
         }
     }
 
@@ -172,20 +181,30 @@ final class NavigationEngine {
         let dy = next.y - fix.y
         let distToNext = sqrt(dx * dx + dy * dy)
 
+        let text: String
         if currentSegmentIndex + 2 < route.count {
             let afterNext = route[currentSegmentIndex + 2]
             let turnText = describeTurn(from: current, through: next, to: afterNext)
-            let metersText = Int(distToNext)
-            instruction = NavInstruction(
-                text: "Head straight for \(metersText)m, then \(turnText).",
-                distanceToNext: distToNext
-            )
+            text = "Head straight for \(Int(distToNext))m, then \(turnText)."
         } else {
-            let metersText = Int(distToNext)
-            instruction = NavInstruction(
-                text: "Head straight for \(metersText)m to your destination.",
-                distanceToNext: distToNext
-            )
+            text = "Head straight for \(Int(distToNext))m to your destination."
+        }
+
+        instruction = NavInstruction(text: text, distanceToNext: distToNext)
+
+        if currentSegmentIndex != lastSpokenSegment {
+            lastSpokenSegment = currentSegmentIndex
+            hasSpokenApproaching = false
+            speech.say(text)
+        } else if !hasSpokenApproaching && distToNext <= approachThreshold {
+            hasSpokenApproaching = true
+            if currentSegmentIndex + 2 < route.count {
+                let afterNext = route[currentSegmentIndex + 2]
+                let turnText = describeTurn(from: current, through: next, to: afterNext)
+                speech.say("In \(Int(distToNext)) meters, \(turnText).")
+            } else {
+                speech.say("Your destination is ahead.")
+            }
         }
     }
 
