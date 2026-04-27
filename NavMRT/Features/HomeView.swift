@@ -11,11 +11,11 @@ struct HomeView: View {
 
                     VStack(spacing: 16) {
                         NavigationLink {
-                            AutoDetectRouteView()
+                            NavigationTestView()
                         } label: {
                             HomeActionCard(
                                 title: "Auto Detect Current Station",
-                                subtitle: "Scan nearby beacons, confirm where the rider is, then choose a destination.",
+                                subtitle: "Navigate to destination from rider location",
                                 systemImage: "dot.radiowaves.left.and.right",
                                 accent: Color(red: 0.06, green: 0.45, blue: 0.40)
                             )

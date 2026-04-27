@@ -72,6 +72,11 @@ final class NavigationEngine {
         status = .idle
     }
 
+    func repeatInstruction() {
+        guard let text = instruction?.text else { return }
+        speech.say(text)
+    }
+
     // MARK: - Processing Pipeline
 
     private func processReadings(_ readings: [BeaconReading]) {

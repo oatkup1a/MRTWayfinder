@@ -87,7 +87,20 @@ struct NavTestRunView: View {
     // MARK: - Control Bar
 
     private var controlBar: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 12) {
+            Button {
+                engine?.repeatInstruction()
+            } label: {
+                Label("Repeat", systemImage: "arrow.counterclockwise")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.orange)
+                    .foregroundStyle(.white)
+                    .cornerRadius(12)
+            }
+            .disabled(!hasStarted)
+
             Button {
                 if hasStarted {
                     engine?.stop()
@@ -98,7 +111,7 @@ struct NavTestRunView: View {
                 }
             } label: {
                 Label(
-                    hasStarted ? "Stop" : "Start Navigation",
+                    hasStarted ? "Stop" : "Start",
                     systemImage: hasStarted ? "stop.circle.fill" : "location.circle.fill"
                 )
                 .font(.headline)
@@ -107,16 +120,6 @@ struct NavTestRunView: View {
                 .background(hasStarted ? Color.red : Color.blue)
                 .foregroundStyle(.white)
                 .cornerRadius(12)
-            }
-
-            Toggle(isOn: $useMockBeacons) {
-                Text("Mock")
-                    .font(.caption)
-            }
-            .toggleStyle(.switch)
-            .frame(width: 100)
-            .onChange(of: useMockBeacons) { _, _ in
-                reloadBeaconMode()
             }
         }
         .padding()
