@@ -1,24 +1,24 @@
 {
   "C1": {
-    "name": "Square 1 Center",
+    "name": "S2_C1",
     "category": "waypoint",
     "startAllowed": false,
     "destAllowed": false
   },
   "C2": {
-    "name": "Square 2 Center",
+    "name": "S2_C2",
     "category": "waypoint",
     "startAllowed": false,
     "destAllowed": false
   },
   "C3": {
-    "name": "Square 3 Center (Turn)",
+    "name": "S2_C3",
     "category": "waypoint",
     "startAllowed": false,
     "destAllowed": false
   },
   "C4": {
-    "name": "Square 4 Center",
+    "name": "S2_C4",
     "category": "waypoint",
     "startAllowed": false,
     "destAllowed": true

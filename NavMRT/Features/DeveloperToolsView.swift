@@ -12,6 +12,12 @@ struct DeveloperToolsView: View {
                 }
             }
             
+            Section("Testing") {
+                NavigationLink("Navigation Test") {
+                    NavigationTestView()
+                }
+            }
+
             Section("Diagnostics") {
                 NavigationLink("Visual Position Map") {
                     VisualPositionView()
