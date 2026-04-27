@@ -34,8 +34,8 @@ final class NavigationEngine {
     private var offRouteStreak: Int = 0
     private let speech = Speech()
     private var lastSpokenSegment: Int = -1
-    private var hasSpokenApproaching: Bool = false
-    private let approachThreshold: Double = 3.0
+    private var hasSpokenApproach: Bool = false
+    private let approachDistance: Double = 3.0
 
     private let arrivalThreshold: Double = 1.5
     private let offRouteThreshold: Double = 5.0
@@ -164,9 +164,14 @@ final class NavigationEngine {
             route = newRoute
             currentSegmentIndex = 0
             lastSpokenSegment = -1
-            hasSpokenApproaching = false
+            hasSpokenApproach = false
             speech.say("Rerouting.")
         }
+    }
+
+    private enum POI {
+        case destination
+        case turn(String)
     }
 
     private func updateInstruction(fix: PositionFix) {
@@ -175,37 +180,76 @@ final class NavigationEngine {
             return
         }
 
-        let current = route[currentSegmentIndex]
-        let next = route[currentSegmentIndex + 1]
-        let dx = next.x - fix.x
-        let dy = next.y - fix.y
+        let nextNode = route[currentSegmentIndex + 1]
+        let dx = nextNode.x - fix.x
+        let dy = nextNode.y - fix.y
         let distToNext = sqrt(dx * dx + dy * dy)
 
+        let turnAtCurrent: String? = {
+            guard currentSegmentIndex > 0, currentSegmentIndex + 1 < route.count else { return nil }
+            let dir = describeTurn(
+                from: route[currentSegmentIndex - 1],
+                through: route[currentSegmentIndex],
+                to: route[currentSegmentIndex + 1]
+            )
+            return dir != "continue straight" ? dir : nil
+        }()
+
+        let (poi, poiDist, _) = scanForPOI(fromSegment: currentSegmentIndex, distFromFix: distToNext)
+        let meters = Int(poiDist)
+
         let text: String
-        if currentSegmentIndex + 2 < route.count {
-            let afterNext = route[currentSegmentIndex + 2]
-            let turnText = describeTurn(from: current, through: next, to: afterNext)
-            text = "Head straight for \(Int(distToNext))m, then \(turnText)."
+        if let turn = turnAtCurrent {
+            switch poi {
+            case .destination:
+                text = "\(turn.capitalized), then continue straight for \(meters) meters to destination."
+            case .turn(let nextTurn):
+                text = "\(turn.capitalized), then continue straight for \(meters) meters, then \(nextTurn)."
+            }
         } else {
-            text = "Head straight for \(Int(distToNext))m to your destination."
+            switch poi {
+            case .destination:
+                text = "Continue straight for \(meters) meters to destination."
+            case .turn(let dir):
+                text = "Continue straight for \(meters) meters, then \(dir)."
+            }
         }
 
         instruction = NavInstruction(text: text, distanceToNext: distToNext)
 
         if currentSegmentIndex != lastSpokenSegment {
             lastSpokenSegment = currentSegmentIndex
-            hasSpokenApproaching = false
+            hasSpokenApproach = false
             speech.say(text)
-        } else if !hasSpokenApproaching && distToNext <= approachThreshold {
-            hasSpokenApproaching = true
-            if currentSegmentIndex + 2 < route.count {
-                let afterNext = route[currentSegmentIndex + 2]
-                let turnText = describeTurn(from: current, through: next, to: afterNext)
-                speech.say("In \(Int(distToNext)) meters, \(turnText).")
-            } else {
-                speech.say("Your destination is ahead.")
+        } else if !hasSpokenApproach && poiDist <= approachDistance {
+            hasSpokenApproach = true
+            let approachText: String
+            switch poi {
+            case .destination:
+                approachText = "In \(meters) meters, arrive at destination."
+            case .turn(let dir):
+                approachText = "In \(meters) meters, \(dir)."
             }
+            speech.say(approachText)
         }
+    }
+
+    private func scanForPOI(fromSegment segIndex: Int, distFromFix: Double) -> (poi: POI, distance: Double, segments: Int) {
+        var totalDist = distFromFix
+        var segments = 1
+
+        for i in (segIndex + 1)..<(route.count - 1) {
+            let dir = describeTurn(from: route[i - 1], through: route[i], to: route[i + 1])
+            if dir != "continue straight" {
+                return (.turn(dir), totalDist, segments)
+            }
+            let a = route[i], b = route[i + 1]
+            let edgeDx = b.x - a.x, edgeDy = b.y - a.y
+            totalDist += sqrt(edgeDx * edgeDx + edgeDy * edgeDy)
+            segments += 1
+        }
+
+        return (.destination, totalDist, segments)
     }
 
     private func updateDistanceToDestination(fix: PositionFix) {

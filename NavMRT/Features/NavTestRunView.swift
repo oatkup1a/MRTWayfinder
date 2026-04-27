@@ -76,15 +76,8 @@ struct NavTestRunView: View {
                 .font(.title2)
                 .foregroundStyle(.blue)
                 .frame(width: 40)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(engine.instruction?.text ?? "Calculating route...")
-                    .font(.subheadline.bold())
-                if engine.instruction != nil && engine.instruction!.distanceToNext > 0 {
-                    Text(String(format: "%.0fm to next turn", engine.instruction!.distanceToNext))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
+            Text(engine.instruction?.text ?? "Calculating route...")
+                .font(.subheadline.bold())
             Spacer()
         }
         .padding()
