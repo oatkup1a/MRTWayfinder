@@ -33,8 +33,15 @@ struct TrilaterationPositioner {
             }
         )
 
+        var strongestFloor = "G"
+        var strongestRSSI = -Double.greatestFiniteMagnitude
+
         let anchors = current.compactMap { id, rssi -> Anchor? in
             guard let beacon = beaconById[id] else { return nil }
+            if rssi > strongestRSSI {
+                strongestRSSI = rssi
+                strongestFloor = beacon.floor
+            }
             let txPower = BeaconTxPowerStore.shared.effectiveTxPower(for: beacon)
             guard txPower != 0 else { return nil }
 
@@ -85,7 +92,7 @@ struct TrilaterationPositioner {
             x: point.x,
             y: point.y,
             z: point.z,
-            floor: registry.floor,
+            floor: strongestFloor,
             confidence: confidence,
             overlap: selected.count,
             ts: Date()

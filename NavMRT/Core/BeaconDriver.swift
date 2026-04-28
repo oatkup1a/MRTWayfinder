@@ -36,6 +36,10 @@ final class BeaconDriver: ObservableObject {
         mock.configureJourney(startId: startId, goalId: goalId)
     }
 
+    func configureMockPath(labels: [String], fingerprints: [Fingerprint]) {
+        mock.configurePath(labels: labels, fingerprints: fingerprints)
+    }
+
     func setMode(_ newMode: Mode, startIfRunning: Bool) {
         // stop both to avoid double streams
         mock.stop()

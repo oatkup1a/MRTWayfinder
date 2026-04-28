@@ -263,7 +263,7 @@ struct TxPowerCalibrationView: View {
 
     private func beaconDisplayLabel(_ beacon: Beacon) -> String {
         if let area = beacon.area, !area.isEmpty {
-            return "\(beacon.id) - \(area)"
+            return "\(beacon.id) - \(area) (\(beacon.floor))"
         }
         return beacon.id
     }

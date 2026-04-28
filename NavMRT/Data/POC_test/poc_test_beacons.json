@@ -1,6 +1,5 @@
 {
   "station": "POC Test Environment",
-  "floor": "Ground",
   "beacons": [
     {
       "id": "Top_leftA",
@@ -11,7 +10,8 @@
       "x": 0.0,
       "y": 1.0,
       "z": 1.5,
-      "area": "Point A vicinity"
+      "area": "Point A vicinity",
+      "floor": "Ground"
     },
     {
       "id": "Bottom_leftA",
@@ -22,7 +22,8 @@
       "x": 0.0,
       "y": 0.0,
       "z": 1.5,
-      "area": "Point A corner"
+      "area": "Point A corner",
+      "floor": "Ground"
     },
     {
       "id": "Top_rightA",
@@ -33,7 +34,8 @@
       "x": 4.0,
       "y": 1.0,
       "z": 1.5,
-      "area": "Junction area"
+      "area": "Junction area",
+      "floor": "Ground"
     },
     {
       "id": "Bottom_rightA",
@@ -44,7 +46,8 @@
       "x": 4.0,
       "y": 0.0,
       "z": 1.5,
-      "area": "Junction corner"
+      "area": "Junction corner",
+      "floor": "Ground"
     },
     {
       "id": "MidA",
@@ -55,7 +58,8 @@
       "x": 2.0,
       "y": 0.5,
       "z": 1.5,
-      "area": "Mid1 hallway"
+      "area": "Mid1 hallway",
+      "floor": "Ground"
     },
     {
       "id": "Top_leftB",
@@ -66,7 +70,8 @@
       "x": 4.0,
       "y": 5.0,
       "z": 1.5,
-      "area": "Point B vicinity"
+      "area": "Point B vicinity",
+      "floor": "Ground"
     },
     {
       "id": "Top_rightB",
@@ -77,7 +82,8 @@
       "x": 5.0,
       "y": 5.0,
       "z": 1.5,
-      "area": "Point B"
+      "area": "Point B",
+      "floor": "Ground"
     },
     {
       "id": "Bottom_righB",
@@ -88,7 +94,8 @@
       "x": 5.0,
       "y": 1.0,
       "z": 1.5,
-      "area": "Vertical hallway start"
+      "area": "Vertical hallway start",
+      "floor": "Ground"
     },
     {
       "id": "MidB",
@@ -99,7 +106,8 @@
       "x": 4.5,
       "y": 3.0,
       "z": 1.5,
-      "area": "Mid2 hallway"
+      "area": "Mid2 hallway",
+      "floor": "Ground"
     },
     {
       "id": "Junction_bottom",
@@ -110,7 +118,8 @@
       "x": 5.0,
       "y": 0.0,
       "z": 1.5,
-      "area": "East corner"
+      "area": "East corner",
+      "floor": "Ground"
     }
   ]
 }

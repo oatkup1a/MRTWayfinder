@@ -40,6 +40,10 @@ final class NavigationEngine {
     private let arrivalThreshold: Double = 1.5
     private let offRouteThreshold: Double = 5.0
     private let offRouteConfirmCount: Int = 5
+    private var fixCount: Int = 0
+    private let warmupFixes: Int = 5
+
+    private var edgeLookup: [String: Graph.Edge.Attrs] = [:]
 
     init(
         destinationId: String,
@@ -53,10 +57,34 @@ final class NavigationEngine {
         self.graph = graph
         self.fingerprints = fingerprints
         self.beaconRegistry = beaconRegistry
+        buildEdgeLookup()
+    }
+
+    private func buildEdgeLookup() {
+        for edge in graph.edges {
+            edgeLookup["\(edge.from)->\(edge.to)"] = edge.attrs
+            edgeLookup["\(edge.to)->\(edge.from)"] = edge.attrs
+        }
+    }
+
+    private func edgeAttrs(from a: Graph.Node, to b: Graph.Node) -> Graph.Edge.Attrs? {
+        edgeLookup["\(a.id)->\(b.id)"]
+    }
+
+    private func isFloorChangeEdge(from a: Graph.Node, to b: Graph.Node) -> Bool {
+        a.floor != b.floor
+    }
+
+    private func floorChangeVerb(from a: Graph.Node, to b: Graph.Node) -> String {
+        guard let attrs = edgeAttrs(from: a, to: b) else { return "proceed" }
+        if attrs.elevator == true { return "take the elevator" }
+        if attrs.stairs == true { return "take the stairs" }
+        return "proceed"
     }
 
     func start() {
         status = .navigating
+        fixCount = 0
         cancellable = beaconDriver.latestPublisher
             .receive(on: RunLoop.main)
             .sink { [weak self] readings in
@@ -85,14 +113,15 @@ final class NavigationEngine {
         let rssiMap = Dictionary(uniqueKeysWithValues: readings.map { ($0.id, Double($0.rssi)) })
         guard let fix = KNNPositioner.estimate(current: rssiMap, dataset: fingerprints) else { return }
         currentPosition = fix
+        fixCount += 1
 
-        if route.isEmpty {
+        if route.isEmpty && fixCount >= warmupFixes {
             computeInitialRoute(from: fix)
         }
 
         guard !route.isEmpty else { return }
 
-        if checkArrival(fix: fix) {
+        if fixCount >= warmupFixes && checkArrival(fix: fix) {
             status = .arrived
             let arrivalText = "You have arrived at your destination."
             instruction = NavInstruction(text: arrivalText, distanceToNext: 0)
@@ -138,14 +167,24 @@ final class NavigationEngine {
 
     private func advanceSegment(fix: PositionFix) {
         while currentSegmentIndex < route.count - 1 {
+            let current = route[currentSegmentIndex]
             let next = route[currentSegmentIndex + 1]
-            let dx = fix.x - next.x
-            let dy = fix.y - next.y
-            let dist = sqrt(dx * dx + dy * dy)
-            if dist < arrivalThreshold {
-                currentSegmentIndex += 1
+
+            if isFloorChangeEdge(from: current, to: next) {
+                if fix.floor == next.floor {
+                    currentSegmentIndex += 1
+                } else {
+                    break
+                }
             } else {
-                break
+                let dx = fix.x - next.x
+                let dy = fix.y - next.y
+                let dist = sqrt(dx * dx + dy * dy)
+                if dist < arrivalThreshold {
+                    currentSegmentIndex += 1
+                } else {
+                    break
+                }
             }
         }
     }
@@ -154,6 +193,7 @@ final class NavigationEngine {
         guard currentSegmentIndex < route.count - 1 else { return false }
         let a = route[currentSegmentIndex]
         let b = route[currentSegmentIndex + 1]
+        if isFloorChangeEdge(from: a, to: b) { return false }
         let dist = distancePointToSegment(
             px: fix.x, py: fix.y,
             ax: a.x, ay: a.y,
@@ -177,6 +217,7 @@ final class NavigationEngine {
     private enum POI {
         case destination
         case turn(String)
+        case floorChange(verb: String, targetFloor: String)
     }
 
     private func updateInstruction(fix: PositionFix) {
@@ -185,17 +226,33 @@ final class NavigationEngine {
             return
         }
 
+        let currentNode = route[currentSegmentIndex]
         let nextNode = route[currentSegmentIndex + 1]
+
+        if isFloorChangeEdge(from: currentNode, to: nextNode) {
+            let verb = floorChangeVerb(from: currentNode, to: nextNode)
+            let text = "Please \(verb) to floor \(nextNode.floor)."
+            instruction = NavInstruction(text: text, distanceToNext: 0)
+            if currentSegmentIndex != lastSpokenSegment {
+                lastSpokenSegment = currentSegmentIndex
+                hasSpokenApproach = false
+                speech.say(text)
+            }
+            return
+        }
+
         let dx = nextNode.x - fix.x
         let dy = nextNode.y - fix.y
         let distToNext = sqrt(dx * dx + dy * dy)
 
         let turnAtCurrent: String? = {
             guard currentSegmentIndex > 0, currentSegmentIndex + 1 < route.count else { return nil }
+            let prev = route[currentSegmentIndex - 1]
+            if isFloorChangeEdge(from: prev, to: currentNode) { return nil }
             let dir = describeTurn(
-                from: route[currentSegmentIndex - 1],
-                through: route[currentSegmentIndex],
-                to: route[currentSegmentIndex + 1]
+                from: prev,
+                through: currentNode,
+                to: nextNode
             )
             return dir != "continue straight" ? dir : nil
         }()
@@ -210,6 +267,8 @@ final class NavigationEngine {
                 text = "\(turn.capitalized), then continue straight for \(meters) meters to destination."
             case .turn(let nextTurn):
                 text = "\(turn.capitalized), then continue straight for \(meters) meters, then \(nextTurn)."
+            case .floorChange(let verb, let floor):
+                text = "\(turn.capitalized), then continue straight for \(meters) meters, then \(verb) to floor \(floor)."
             }
         } else {
             switch poi {
@@ -217,6 +276,8 @@ final class NavigationEngine {
                 text = "Continue straight for \(meters) meters to destination."
             case .turn(let dir):
                 text = "Continue straight for \(meters) meters, then \(dir)."
+            case .floorChange(let verb, let floor):
+                text = "Continue straight for \(meters) meters, then \(verb) to floor \(floor)."
             }
         }
 
@@ -234,6 +295,8 @@ final class NavigationEngine {
                 approachText = "In \(meters) meters, arrive at destination."
             case .turn(let dir):
                 approachText = "In \(meters) meters, \(dir)."
+            case .floorChange(let verb, let floor):
+                approachText = "In \(meters) meters, \(verb) to floor \(floor)."
             }
             speech.say(approachText)
         }
@@ -244,11 +307,20 @@ final class NavigationEngine {
         var segments = 1
 
         for i in (segIndex + 1)..<(route.count - 1) {
-            let dir = describeTurn(from: route[i - 1], through: route[i], to: route[i + 1])
-            if dir != "continue straight" {
-                return (.turn(dir), totalDist, segments)
-            }
             let a = route[i], b = route[i + 1]
+
+            if isFloorChangeEdge(from: a, to: b) {
+                let verb = floorChangeVerb(from: a, to: b)
+                return (.floorChange(verb: verb, targetFloor: b.floor), totalDist, segments)
+            }
+
+            if !isFloorChangeEdge(from: route[i - 1], to: a) {
+                let dir = describeTurn(from: route[i - 1], through: a, to: b)
+                if dir != "continue straight" {
+                    return (.turn(dir), totalDist, segments)
+                }
+            }
+
             let edgeDx = b.x - a.x, edgeDy = b.y - a.y
             totalDist += sqrt(edgeDx * edgeDx + edgeDy * edgeDy)
             segments += 1
@@ -276,7 +348,7 @@ final class NavigationEngine {
             total += sqrt(dxFirst * dxFirst + dyFirst * dyFirst)
         }
 
-        for i in (currentSegmentIndex + 1)..<(route.count - 1) {
+        for i in stride(from: currentSegmentIndex + 1, to: route.count - 1, by: 1) {
             let a = route[i]
             let b = route[i + 1]
             let edgeDx = b.x - a.x

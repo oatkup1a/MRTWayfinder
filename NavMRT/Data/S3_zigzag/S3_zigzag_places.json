@@ -3,7 +3,7 @@
     "name": "S3_C1",
     "category": "waypoint",
     "startAllowed": false,
-    "destAllowed": false
+    "destAllowed": true
   },
   "C2": {
     "name": "S3_C2",

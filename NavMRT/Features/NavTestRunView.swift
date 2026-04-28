@@ -23,6 +23,7 @@ struct NavTestRunView: View {
                         engine: engine,
                         beaconRegistry: registry,
                         graph: graph,
+                        displayFloor: displayFloor,
                         frameSize: geometry.size
                     )
                 } else {
@@ -43,6 +44,12 @@ struct NavTestRunView: View {
         .onDisappear { engine?.stop() }
     }
 
+    // MARK: - Display Floor
+
+    private var displayFloor: String {
+        engine?.currentPosition?.floor ?? beaconRegistry?.beacons.first?.floor ?? "G"
+    }
+
     // MARK: - Status Bar
 
     private var statusBar: some View {
@@ -53,6 +60,15 @@ struct NavTestRunView: View {
                     .frame(width: 10, height: 10)
                 Text(statusText(engine.status))
                     .font(.subheadline.bold())
+
+                Text(displayFloor)
+                    .font(.caption.bold())
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(Color.blue.opacity(0.15))
+                    .foregroundStyle(.blue)
+                    .clipShape(Capsule())
+
                 Spacer()
                 Text(String(format: "%.0fm remaining", engine.distanceToDestination))
                     .font(.caption)
@@ -153,7 +169,14 @@ struct NavTestRunView: View {
             driver.configureReal(registry: registry)
 
             if useMockBeacons {
-                if let startNode = loadedGraph.nodes.first {
+                let mockLabels = buildMockPath(
+                    destinationId: destinationId,
+                    graph: loadedGraph,
+                    fingerprints: fingerprints
+                )
+                if mockLabels.count >= 2 {
+                    driver.configureMockPath(labels: mockLabels, fingerprints: fingerprints)
+                } else if let startNode = loadedGraph.nodes.first {
                     driver.configureMockJourney(startId: startNode.id, goalId: destinationId)
                 }
             }
@@ -169,6 +192,42 @@ struct NavTestRunView: View {
         } catch {
             print("NavTestRunView: failed to load data: \(error)")
         }
+    }
+
+    private func buildMockPath(
+        destinationId: String,
+        graph: Graph,
+        fingerprints: [Fingerprint]
+    ) -> [String] {
+        let allPaths = graph.nodes.compactMap { node -> (path: [Graph.Node], cost: Double)? in
+            guard node.id != destinationId else { return nil }
+            let path = GraphRouter.shortestPath(from: node.id, to: destinationId, in: graph)
+            guard path.count >= 2 else { return nil }
+            var cost = 0.0
+            for i in 0..<(path.count - 1) {
+                let dx = path[i + 1].x - path[i].x
+                let dy = path[i + 1].y - path[i].y
+                cost += sqrt(dx * dx + dy * dy)
+            }
+            return (path, cost)
+        }
+        guard let longest = allPaths.max(by: { $0.cost < $1.cost }) else { return [] }
+
+        return longest.path.compactMap { node in
+            nearestFingerprintLabel(x: node.x, y: node.y, floor: node.floor, fingerprints: fingerprints)
+        }
+    }
+
+    private func nearestFingerprintLabel(
+        x: Double, y: Double, floor: String, fingerprints: [Fingerprint]
+    ) -> String? {
+        fingerprints
+            .filter { $0.loc.floor == floor }
+            .min(by: {
+                let d0 = ($0.loc.x - x) * ($0.loc.x - x) + ($0.loc.y - y) * ($0.loc.y - y)
+                let d1 = ($1.loc.x - x) * ($1.loc.x - x) + ($1.loc.y - y) * ($1.loc.y - y)
+                return d0 < d1
+            })?.label
     }
 
     private func reloadBeaconMode() {
@@ -206,6 +265,8 @@ struct NavTestRunView: View {
 
     private func instructionIcon(engine: NavigationEngine) -> String {
         guard let instruction = engine.instruction else { return "arrow.up" }
+        if instruction.text.contains("elevator") { return "elevator.fill" }
+        if instruction.text.contains("stairs") { return "figure.stairs" }
         if instruction.text.contains("left") { return "arrow.turn.up.left" }
         if instruction.text.contains("right") { return "arrow.turn.up.right" }
         if instruction.text.contains("U-turn") { return "arrow.uturn.down" }
@@ -220,10 +281,19 @@ struct NavigationMapView: View {
     let engine: NavigationEngine
     let beaconRegistry: BeaconRegistry
     let graph: Graph
+    let displayFloor: String
     let frameSize: CGSize
 
+    private var floorBeacons: [Beacon] {
+        beaconRegistry.beacons.filter { $0.floor == displayFloor }
+    }
+
+    private var floorNodes: [Graph.Node] {
+        graph.nodes.filter { $0.floor == displayFloor }
+    }
+
     private var transform: MapTransform {
-        MapTransform(beacons: beaconRegistry.beacons, frameSize: frameSize)
+        MapTransform(beacons: floorBeacons, frameSize: frameSize)
     }
 
     var body: some View {
@@ -232,20 +302,21 @@ struct NavigationMapView: View {
 
             routeOverlay
 
-            ForEach(beaconRegistry.beacons, id: \.compositeId) { beacon in
+            ForEach(floorBeacons, id: \.compositeId) { beacon in
                 SmallBeaconMarker(beacon: beacon, transform: transform)
             }
 
             graphNodeMarkers
 
-            if let pos = engine.currentPosition {
+            if let pos = engine.currentPosition, pos.floor == displayFloor {
                 NavigationPositionMarker(
                     position: snappedPosition(pos),
                     transform: transform
                 )
             }
 
-            if let dest = graph.nodes.first(where: { $0.id == engine.route.last?.id ?? "" }) {
+            if let dest = graph.nodes.first(where: { $0.id == engine.route.last?.id ?? "" }),
+               dest.floor == displayFloor {
                 DestinationMarker(node: dest, transform: transform)
             }
         }
@@ -260,6 +331,8 @@ struct NavigationMapView: View {
             let seg = engine.currentSegmentIndex
 
             for i in 0..<(route.count - 1) {
+                guard route[i].floor == displayFloor && route[i + 1].floor == displayFloor else { continue }
+
                 let a = transform.toScreen(x: route[i].x, y: route[i].y)
                 let b = transform.toScreen(x: route[i + 1].x, y: route[i + 1].y)
 
@@ -285,7 +358,7 @@ struct NavigationMapView: View {
     // MARK: - Graph Node Markers
 
     private var graphNodeMarkers: some View {
-        ForEach(graph.nodes, id: \.id) { node in
+        ForEach(floorNodes, id: \.id) { node in
             let pt = transform.toScreen(x: node.x, y: node.y)
             Circle()
                 .fill(Color.gray.opacity(0.4))
