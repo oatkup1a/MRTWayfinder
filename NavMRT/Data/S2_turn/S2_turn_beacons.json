@@ -1,0 +1,173 @@
+{
+  "station": "S2_TURN",
+  "beacons": [
+    {
+      "id": "S2_1",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 1,
+      "txPower": -59,
+      "x": 0.0,
+      "y": 0.0,
+      "z": 0,
+      "area": "sq1",
+      "floor": "G"
+    },
+    {
+      "id": "S2_2",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 2,
+      "txPower": -59,
+      "x": 0.0,
+      "y": 5.0,
+      "z": 0,
+      "area": "sq1",
+      "floor": "G"
+    },
+    {
+      "id": "S2_3",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 3,
+      "txPower": -59,
+      "x": 2.5,
+      "y": 2.5,
+      "z": 0,
+      "area": "sq1",
+      "floor": "G"
+    },
+    {
+      "id": "S2_4",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 4,
+      "txPower": -59,
+      "x": 5.0,
+      "y": 0.0,
+      "z": 0,
+      "area": "sq1_sq2",
+      "floor": "G"
+    },
+    {
+      "id": "S2_5",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 5,
+      "txPower": -59,
+      "x": 5.0,
+      "y": 5.0,
+      "z": 0,
+      "area": "sq1_sq2",
+      "floor": "G"
+    },
+    {
+      "id": "S2_6",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 6,
+      "txPower": -59,
+      "x": 7.5,
+      "y": 2.5,
+      "z": 0,
+      "area": "sq2",
+      "floor": "G"
+    },
+    {
+      "id": "S2_7",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 7,
+      "txPower": -59,
+      "x": 10.0,
+      "y": 0.0,
+      "z": 0,
+      "area": "sq2_sq3_sq4",
+      "floor": "G"
+    },
+    {
+      "id": "S2_8",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 8,
+      "txPower": -59,
+      "x": 10.0,
+      "y": 5.0,
+      "z": 0,
+      "area": "sq2_sq3",
+      "floor": "G"
+    },
+    {
+      "id": "S2_9",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 9,
+      "txPower": -59,
+      "x": 12.5,
+      "y": 2.5,
+      "z": 0,
+      "area": "sq3",
+      "floor": "G"
+    },
+    {
+      "id": "S2_10",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 10,
+      "txPower": -59,
+      "x": 15.0,
+      "y": 0.0,
+      "z": 0,
+      "area": "sq3_sq4",
+      "floor": "G"
+    },
+    {
+      "id": "S2_11",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 11,
+      "txPower": -59,
+      "x": 15.0,
+      "y": 5.0,
+      "z": 0,
+      "area": "sq3",
+      "floor": "G"
+    },
+    {
+      "id": "S2_12",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 12,
+      "txPower": -59,
+      "x": 10.0,
+      "y": -5.0,
+      "z": 0,
+      "area": "sq4",
+      "floor": "G"
+    },
+    {
+      "id": "S2_13",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 13,
+      "txPower": -59,
+      "x": 15.0,
+      "y": -5.0,
+      "z": 0,
+      "area": "sq4",
+      "floor": "G"
+    },
+    {
+      "id": "S2_14",
+      "uuid": "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+      "major": 1,
+      "minor": 14,
+      "txPower": -59,
+      "x": 12.5,
+      "y": -2.5,
+      "z": 0,
+      "area": "sq4",
+      "floor": "G"
+    }
+  ]
+}

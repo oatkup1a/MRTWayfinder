@@ -1,0 +1,26 @@
+{
+  "C1": {
+    "name": "S1_C1",
+    "category": "waypoint",
+    "startAllowed": false,
+    "destAllowed": true
+  },
+  "C2": {
+    "name": "S1_C2",
+    "category": "waypoint",
+    "startAllowed": false,
+    "destAllowed": false
+  },
+  "C3": {
+    "name": "S1_C3",
+    "category": "waypoint",
+    "startAllowed": false,
+    "destAllowed": false
+  },
+  "C4": {
+    "name": "S1_C4",
+    "category": "waypoint",
+    "startAllowed": false,
+    "destAllowed": true
+  }
+}

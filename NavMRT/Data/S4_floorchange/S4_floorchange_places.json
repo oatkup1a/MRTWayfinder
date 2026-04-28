@@ -1,0 +1,26 @@
+{
+  "C1": {
+    "name": "S4_Entrance_G",
+    "category": "waypoint",
+    "startAllowed": true,
+    "destAllowed": true
+  },
+  "C2": {
+    "name": "S4_Elevator_G",
+    "category": "elevator",
+    "startAllowed": true,
+    "destAllowed": false
+  },
+  "C3": {
+    "name": "S4_Elevator_B1",
+    "category": "elevator",
+    "startAllowed": true,
+    "destAllowed": false
+  },
+  "C4": {
+    "name": "S4_Entrance_B1",
+    "category": "waypoint",
+    "startAllowed": true,
+    "destAllowed": true
+  }
+}

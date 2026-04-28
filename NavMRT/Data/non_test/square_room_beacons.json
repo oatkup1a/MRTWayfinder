@@ -1,6 +1,5 @@
 {
   "station": "Test Room",
-  "floor": "Ground",
   "beacons": [
     {
       "id": "Bottom_Left",
@@ -11,7 +10,8 @@
       "x": 0.0,
       "y": 0.0,
       "z": 2.0,
-      "area": "Southwest"
+      "area": "Southwest",
+      "floor": "Ground"
     },
     {
       "id": "Top_Left",
@@ -22,7 +22,8 @@
       "x": 0.0,
       "y": 3.0,
       "z": 2.0,
-      "area": "Northwest"
+      "area": "Northwest",
+      "floor": "Ground"
     },
     {
       "id": "Center_Middle",
@@ -33,7 +34,8 @@
       "x": 1.5,
       "y": 1.5,
       "z": 2.0,
-      "area": "Center"
+      "area": "Center",
+      "floor": "Ground"
     },
     {
       "id": "Top_Right",
@@ -44,7 +46,8 @@
       "x": 3.0,
       "y": 3.0,
       "z": 2.0,
-      "area": "Northeast"
+      "area": "Northeast",
+      "floor": "Ground"
     },
     {
       "id": "Bottom_Right",
@@ -55,7 +58,8 @@
       "x": 3.0,
       "y": 0.0,
       "z": 2.0,
-      "area": "Southeast"
+      "area": "Southeast",
+      "floor": "Ground"
     }
   ]
 }

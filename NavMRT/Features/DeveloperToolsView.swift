@@ -4,7 +4,7 @@ struct DeveloperToolsView: View {
     var body: some View {
         List {
             Section("POC Testing") {
-                NavigationLink("POC Visual Navigation ⭐") {
+                NavigationLink("POC Visual Navigation") {
                     POCNavigationVisualView()
                 }
                 NavigationLink("POC Navigation (Manual)") {
@@ -12,6 +12,12 @@ struct DeveloperToolsView: View {
                 }
             }
             
+            Section("Testing") {
+                NavigationLink("Navigation Test") {
+                    NavigationTestView()
+                }
+            }
+
             Section("Diagnostics") {
                 NavigationLink("Visual Position Map") {
                     VisualPositionView()

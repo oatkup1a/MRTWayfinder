@@ -45,6 +45,21 @@ final class MockBeaconManager: ObservableObject, BeaconSource {
         print("MockBeaconManager set \(fingerprintByLabel.count) fingerprints from external source")
     }
 
+    func configurePath(labels: [String], fingerprints: [Fingerprint]) {
+        setFingerprints(fingerprints)
+        guard labels.count >= 2 else {
+            print("MockBeaconManager: configurePath needs >= 2 labels, got \(labels.count)")
+            return
+        }
+        scenario = Scenario(
+            nodeIds: labels,
+            secondsPerSegment: 6,
+            stationWaitSeconds: 12
+        )
+        t = 0
+        print("MockBeaconManager configured explicit path: \(labels)")
+    }
+
     func configureJourney(startId: String, goalId: String) {
         // Load fingerprints from DataStore if not already set externally
         if fingerprintByLabel.isEmpty {

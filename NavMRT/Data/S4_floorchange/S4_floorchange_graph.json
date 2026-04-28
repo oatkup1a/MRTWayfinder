@@ -1,0 +1,64 @@
+{
+  "nodes": [
+    {
+      "id": "C1",
+      "x": 0.0,
+      "y": 2.5,
+      "floor": "G",
+      "type": "waypoint"
+    },
+    {
+      "id": "C2",
+      "x": 5.0,
+      "y": 2.5,
+      "floor": "G",
+      "type": "elevator"
+    },
+    {
+      "id": "C3",
+      "x": 5.0,
+      "y": 2.5,
+      "floor": "B1",
+      "type": "elevator"
+    },
+    {
+      "id": "C4",
+      "x": 0.0,
+      "y": 2.5,
+      "floor": "B1",
+      "type": "waypoint"
+    }
+  ],
+  "edges": [
+    {
+      "from": "C1",
+      "to": "C2",
+      "len": 5.0,
+      "attrs": {
+        "tactile": false,
+        "stairs": false,
+        "elevator": false
+      }
+    },
+    {
+      "from": "C2",
+      "to": "C3",
+      "len": 4.0,
+      "attrs": {
+        "tactile": false,
+        "stairs": false,
+        "elevator": true
+      }
+    },
+    {
+      "from": "C3",
+      "to": "C4",
+      "len": 5.0,
+      "attrs": {
+        "tactile": false,
+        "stairs": false,
+        "elevator": false
+      }
+    }
+  ]
+}

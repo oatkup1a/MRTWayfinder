@@ -1,7 +1,6 @@
 import Foundation
 struct BeaconRegistry: Decodable {
   let station: String
-  let floor: String
   let beacons: [Beacon]
 }
 struct Beacon: Decodable, Hashable {
@@ -13,6 +12,7 @@ struct Beacon: Decodable, Hashable {
   let x: Double
   let y: Double
   let z: Double?
+  let floor: String
   let area: String?
 }
 

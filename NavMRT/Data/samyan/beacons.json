@@ -1,6 +1,5 @@
 {
   "station": "MRT_SAMYAN",
-  "floor": "B2",
   "beacons": [
     {
       "id": "A01",
@@ -11,7 +10,8 @@
       "x": 2.0,
       "y": 1.5,
       "z": 0,
-      "area": "corridor_left"
+      "area": "corridor_left",
+      "floor": "B2"
     },
     {
       "id": "A02",
@@ -22,7 +22,8 @@
       "x": 6.0,
       "y": -1.5,
       "z": 0,
-      "area": "corridor_right"
+      "area": "corridor_right",
+      "floor": "B2"
     },
     {
       "id": "A03",
@@ -33,7 +34,8 @@
       "x": 10.0,
       "y": 1.5,
       "z": 0,
-      "area": "corridor_left"
+      "area": "corridor_left",
+      "floor": "B2"
     },
     {
       "id": "A04",
@@ -44,7 +46,8 @@
       "x": 14.0,
       "y": -1.5,
       "z": 0,
-      "area": "corridor_right"
+      "area": "corridor_right",
+      "floor": "B2"
     },
     {
       "id": "A05",
@@ -55,7 +58,8 @@
       "x": 18.0,
       "y": 1.5,
       "z": 0,
-      "area": "corridor_left"
+      "area": "corridor_left",
+      "floor": "B2"
     }
   ]
 }

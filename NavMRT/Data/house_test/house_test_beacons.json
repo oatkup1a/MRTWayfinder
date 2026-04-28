@@ -1,6 +1,5 @@
 {
   "station": "HOUSE_TEST",
-  "floor": "G",
   "beacons": [
     {
       "id": "A02",
@@ -11,7 +10,8 @@
       "x": 0.5,
       "y": 0.0,
       "z": 0,
-      "area": "left_end"
+      "area": "left_end",
+      "floor": "G"
     },
     {
       "id": "A03",
@@ -22,7 +22,8 @@
       "x": 3.5,
       "y": 1.5,
       "z": 0,
-      "area": "middle_offset"
+      "area": "middle_offset",
+      "floor": "G"
     },
     {
       "id": "A04",
@@ -33,7 +34,8 @@
       "x": 6.5,
       "y": 0.0,
       "z": 0,
-      "area": "right_end"
+      "area": "right_end",
+      "floor": "G"
     }
   ]
 }

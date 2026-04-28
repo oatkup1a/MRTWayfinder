@@ -1,6 +1,5 @@
 {
   "station": "MRT_SILOM",
-  "floor": "B2",
   "beacons": [
     {
       "id": "b01",
@@ -11,7 +10,8 @@
       "x": 12.4,
       "y": 5.8,
       "z": -2,
-      "area": "concourse"
+      "area": "concourse",
+      "floor": "B2"
     },
     {
       "id": "b02",
@@ -22,7 +22,8 @@
       "x": 20.1,
       "y": 7.2,
       "z": -2,
-      "area": "concourse"
+      "area": "concourse",
+      "floor": "B2"
     }
   ]
 }
