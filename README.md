@@ -1,11 +1,11 @@
-# NavMRT
+# MRTWayfinder
 
-NavMRT is a **blind-first indoor navigation iOS application** designed to assist visually impaired passengers in MRT stations.  
+MRTWayfinder is a **blind-first indoor navigation iOS application** designed to assist visually impaired passengers in MRT stations.  
 It uses **Bluetooth iBeacons**, **RSSI fingerprinting**, and **voice-first UX** to provide turn-by-turn indoor guidance.
 
 This project focuses on **accessibility, robustness, and real-world deployability**, rather than visual maps.
 
-## 🎯 Project Goals
+## Project Goals
 
 - Enable **independent indoor navigation** for visually impaired users
 - Provide **voice-first, VoiceOver-optimized UX**
@@ -13,7 +13,7 @@ This project focuses on **accessibility, robustness, and real-world deployabilit
 - Detect **off-route behavior** and recover automatically
 - Be deployable with **real beacon hardware**
 
-## ✨ Key Features
+## Key Features
 
 ### Navigation & Positioning
 - RSSI fingerprinting with **KNN positioning**
@@ -41,26 +41,48 @@ This project focuses on **accessibility, robustness, and real-world deployabilit
 - RSSI Console for live signal debugging
 - Strict ID consistency (`UUID:major:minor`) across pipeline
 
-## 🚦 Current Status
+### Station Support
+- Multi-station catalog: **Sam Yan**, **Si Lom**, **Lumphini**
+- Auto-detect current station from live beacon scans
+- Swappable data packs (beacons, fingerprints, graph, places) per station
+- Section-level test packs for controlled evaluation (straight / turn / zigzag / floor change)
 
-- ✅ End-to-end navigation pipeline implemented
-- ✅ Mock beacon testing complete
-- ✅ Real beacon integration ready
-- 🔬 Actively extending and refining (research prototype)
+### Developer Tools
+- In-app fingerprint collector
+- Tx power calibration view
+- Visual position debug view
+- RSSI console with live signal inspection
 
-## 📦 Sample Station Data Packs
+## Current Status
 
-The repository now includes sample station data packs under `NavMRT/Data/`:
-- `samyan/`
-- `silom/`
-- `lumphini/`
+- End-to-end navigation pipeline implemented
+- Mock beacon testing complete
+- Real beacon integration ready
+- Multi-floor navigation with floor-change announcements implemented
+- Station auto-detection implemented
+- Actively extending and refining (research prototype)
 
-Samyan keeps the runtime filenames (`beacons.json`, `fingerprints.json`, `graph.json`, `places.json`). Additional sample packs use station-prefixed filenames (for example `silom_beacons.json`, `lumphini_graph.json`) plus station metadata files (`silom.json`, `lumphini.json`) to avoid Xcode resource name collisions.
+## Station Data Packs
 
-## 🔮 Future Work
+Data packs live under `NavMRT/Data/` and are selectable at runtime via Settings:
+
+| Pack ID | Description |
+|---|---|
+| `samyan` | Sam Yan station (legacy default filenames) |
+| `silom` | Si Lom station |
+| `lumphini` | Lumphini station |
+| `S1_straight` | Section 1 — straight corridor test |
+| `S2_turn` | Section 2 — single turn test |
+| `S3_zigzag` | Section 3 — zigzag path test |
+| `S4_floorchange` | Section 4 — floor change test |
+| `poc_test` | Early POC navigation test |
+| `house_test` | Indoor home environment test |
+
+Each pack contains: `beacons.json`, `fingerprints.json`, `graph.json`, `places.json` (station-prefixed for non-default packs), plus an optional station metadata file.
+
+## Future Work
 
 - Floor-specific beacon filtering
-- In-app fingerprint collection mode
 - Background navigation support
 - User studies & on-site MRT deployment
 - Energy optimization & signal stabilization
@@ -110,6 +132,4 @@ flowchart TD
 
   R --> S["UI Text<br/>instructionText / accessibility"]
   R --> T["Speech & Haptics<br/>Speech.say + Haptics"]
-
-
 ```
